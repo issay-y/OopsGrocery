@@ -9,9 +9,11 @@ namespace OopsGrocery.ViewModels;
 
 public sealed class LoginViewModel : INotifyPropertyChanged
 {
+    private const string InvalidCredentialsMessage = "Invalid username or password.";
+
     private string _username = string.Empty;
     private string _password = string.Empty;
-    private string _statusMessage = string.Empty;
+    private bool _isLoggingIn;
 
     public event PropertyChangedEventHandler? PropertyChanged;
     public event EventHandler? LoginSucceeded;
@@ -26,10 +28,6 @@ public sealed class LoginViewModel : INotifyPropertyChanged
         {
             if (_username == value) return;
             _username = value;
-            if (!string.IsNullOrEmpty(_statusMessage))
-            {
-                StatusMessage = string.Empty;
-            }
             OnPropertyChanged();
         }
     }
@@ -41,27 +39,9 @@ public sealed class LoginViewModel : INotifyPropertyChanged
         {
             if (_password == value) return;
             _password = value;
-            if (!string.IsNullOrEmpty(_statusMessage))
-            {
-                StatusMessage = string.Empty;
-            }
             OnPropertyChanged();
         }
     }
-
-    public string StatusMessage
-    {
-        get => _statusMessage;
-        private set
-        {
-            if (_statusMessage == value) return;
-            _statusMessage = value;
-            OnPropertyChanged();
-            OnPropertyChanged(nameof(HasErrorMessage));
-        }
-    }
-
-    public bool HasErrorMessage => !string.IsNullOrWhiteSpace(_statusMessage);
 
     public ICommand LoginCommand { get; }
 
@@ -75,45 +55,41 @@ public sealed class LoginViewModel : INotifyPropertyChanged
         Password = password;
     }
 
-    private void SetError(string message)
-    {
-        StatusMessage = message;
-        LoginFailed?.Invoke(this, message);
-    }
-
     private void Login()
     {
-        var usernameValidation = LoginValidator.ValidateUsername(Username);
-        if (!usernameValidation.IsValid)
-        {
-            SetError(usernameValidation.ErrorMessage!);
-            return;
-        }
-
-        var passwordValidation = LoginValidator.ValidatePassword(_password, Username);
-        if (!passwordValidation.IsValid)
-        {
-            SetError(passwordValidation.ErrorMessage!);
-            return;
-        }
+        if (_isLoggingIn) return;
+        _isLoggingIn = true;
 
         try
         {
-            var authentication = new AuthenticationService();
-            var user = authentication.AuthenticateUser(Username.Trim(), _password);
-            if (user == null)
+            // Login only compares credentials. No password-format rules here.
+            if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrEmpty(_password))
             {
-                SetError("Invalid username or password. Note that username is strictly case-sensitive.");
+                LoginFailed?.Invoke(this, InvalidCredentialsMessage);
                 return;
             }
 
-            LoggedInUser = user;
-            StatusMessage = string.Empty;
-            LoginSucceeded?.Invoke(this, EventArgs.Empty);
+            try
+            {
+                var authentication = new AuthenticationService();
+                var user = authentication.AuthenticateUser(Username.Trim(), _password);
+                if (user == null)
+                {
+                    LoginFailed?.Invoke(this, InvalidCredentialsMessage);
+                    return;
+                }
+
+                LoggedInUser = user;
+                LoginSucceeded?.Invoke(this, EventArgs.Empty);
+            }
+            catch (Exception)
+            {
+                LoginFailed?.Invoke(this, "Unable to connect to the database. Ensure MariaDB is running on port 3306.");
+            }
         }
-        catch (Exception)
+        finally
         {
-            SetError("Unable to connect to the database. Ensure MariaDB is running on port 3306.");
+            _isLoggingIn = false;
         }
     }
 

@@ -9,10 +9,10 @@ public sealed class AuthenticationService
         "Server=localhost;Port=3306;Database=OopsGrocery;User ID=root;Password=;SslMode=None;";
 
     private readonly string _connectionString =
-        Environment.GetEnvironmentVariable("OOPSGROCERY_CONNECTION_STRING")
-        ?? DefaultConnectionString;
+        DatabaseInitializer.ResolveConnectionString();
 
     private readonly IPasswordHasher _passwordHasher;
+    private static bool _hasEnsuredDatabase;
 
     public AuthenticationService(IPasswordHasher? passwordHasher = null)
     {
@@ -21,8 +21,31 @@ public sealed class AuthenticationService
 
     public User? AuthenticateUser(string username, string password)
     {
+        if (!_hasEnsuredDatabase)
+        {
+            try
+            {
+                DatabaseInitializer.EnsureDatabaseInitialized(_connectionString);
+                _hasEnsuredDatabase = true;
+            }
+            catch
+            {
+                // If auto-init fails (e.g. specific access restrictions), continue to try standard connection
+            }
+        }
+
         using var connection = new MySqlConnection(_connectionString);
-        connection.Open();
+        try
+        {
+            connection.Open();
+        }
+        catch (MySqlException ex) when (ex.Number is 1049 or 1146)
+        {
+            // Database or table missing on this device; attempt initialization
+            DatabaseInitializer.EnsureDatabaseInitialized(_connectionString);
+            _hasEnsuredDatabase = true;
+            connection.Open();
+        }
 
         using var command = connection.CreateCommand();
         command.CommandText = """

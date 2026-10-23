@@ -101,14 +101,10 @@
 
             <!-- Notification banner if any -->
             <Border Background="#ECFDF5" BorderBrush="#10B981" BorderThickness="1" CornerRadius="6"
-                    Padding="12,10" Margin="0,0,0,18"
-                    Visibility="{Binding NotificationMessage, Converter={x:Null}}">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="🔔 " FontSize="14"/>
-                    <TextBlock Text="{Binding NotificationMessage}" FontWeight="SemiBold" Foreground="#065F46" VerticalAlignment="Center"/>
-                </StackPanel>
+                    Padding="12,10" Margin="0,0,0,18">
                 <Border.Style>
                     <Style TargetType="Border">
+                        <Setter Property="Visibility" Value="Visible"/>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding NotificationMessage}" Value="">
                                 <Setter Property="Visibility" Value="Collapsed"/>
@@ -116,6 +112,10 @@
                         </Style.Triggers>
                     </Style>
                 </Border.Style>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="🔔 " FontSize="14"/>
+                    <TextBlock Text="{Binding NotificationMessage}" FontWeight="SemiBold" Foreground="#065F46" VerticalAlignment="Center"/>
+                </StackPanel>
             </Border>
 
             <!-- Metrics grid (4 cards) -->

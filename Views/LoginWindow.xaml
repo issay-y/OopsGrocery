@@ -353,8 +353,39 @@
                     </Grid>
                 </Border>
 
+                <!-- Dynamic In-Form Error Alert Banner -->
+                <Border x:Name="ErrorAlertBanner"
+                        Margin="0,16,0,0" Padding="14,12"
+                        Background="#FEF2F2"
+                        BorderBrush="#EF4444"
+                        BorderThickness="1"
+                        CornerRadius="8">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HasErrorMessage}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="28"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="⚠️" FontSize="14" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="Authentication Error" FontSize="12" FontWeight="Bold" Foreground="#B91C1C"/>
+                            <TextBlock Text="{Binding StatusMessage}" FontSize="12.5" LineHeight="17"
+                                       Foreground="#991B1B" TextWrapping="Wrap" Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
                 <!-- Info banner -->
-                <Border Margin="0,20,0,0" Padding="0,13,16,13"
+                <Border Margin="0,16,0,0" Padding="0,12,16,12"
                         Background="{StaticResource BannerBrush}"
                         BorderBrush="{StaticResource ForestBrush}"
                         BorderThickness="4,0,0,0"
@@ -379,12 +410,12 @@
                         </Viewbox>
 
                         <StackPanel Grid.Column="1">
-                            <TextBlock Text="Role-based workspace" FontSize="14" FontWeight="SemiBold"
+                            <TextBlock Text="Role-based workspace" FontSize="13" FontWeight="SemiBold"
                                        Foreground="{StaticResource ForestBrush}"/>
                             <TextBlock Margin="0,2,0,0"
                                        Text="Your account role determines the tools you can access."
-                                       FontSize="12.5" TextWrapping="Wrap"
-                                       Foreground="{StaticResource InkBrush}" Opacity="0.85"/>
+                                       FontSize="13" TextWrapping="Wrap"
+                                       Foreground="{StaticResource InkBrush}" Opacity="0.9"/>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -408,11 +439,7 @@
                     </StackPanel>
                 </Button>
             </StackPanel>
-
-            <TextBlock Grid.Row="1" Margin="0,0,0,28"
-                       Text="Need access? Contact your store administrator."
-                       FontSize="12" TextAlignment="Center" HorizontalAlignment="Center"
-                       Foreground="{StaticResource MutedBrush}"/>
+            
         </Grid>
     </Grid>
 </Window>

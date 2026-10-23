@@ -1,41 +1,77 @@
 [CmdletBinding()]
 param(
-	[string]$XamppPath = 'C:\xampp',
+	[string]$XamppPath = '',
 	[string]$DatabaseUser = 'root',
 	[string]$DatabasePassword = ''
 )
 
-$mysqlClient = Join-Path $XamppPath 'mysql\bin\mysql.exe'
-$schemaPath = Join-Path $PSScriptRoot '..\Database\schema.sql'
+$scriptDir = $PSScriptRoot
+$sqlFile = Join-Path $scriptDir '..\Database\OopsGrocery.sql'
 
-if (-not (Test-Path $mysqlClient)) {
-	throw "MariaDB client was not found at '$mysqlClient'. Pass the XAMPP location with -XamppPath."
+if (-not (Test-Path $sqlFile)) {
+	$sqlFile = Join-Path $scriptDir '..\Database\schema.sql'
 }
 
-if (-not (Test-Path $schemaPath)) {
-	throw "Database schema was not found at '$schemaPath'."
+if (-not (Test-Path $sqlFile)) {
+	throw "Database SQL file was not found in the Database directory."
 }
+
+# Locate mysql.exe across standard environments
+$explicitPath = if ($XamppPath) { Join-Path $XamppPath 'mysql\bin\mysql.exe' } else { $null }
+
+$mysqlCandidatePaths = @(
+	$explicitPath,
+	'C:\xampp\mysql\bin\mysql.exe',
+	'D:\xampp\mysql\bin\mysql.exe',
+	'E:\xampp\mysql\bin\mysql.exe',
+	'C:\Program Files\MySQL\MySQL Server 8.4\bin\mysql.exe',
+	'C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe',
+	'C:\Program Files\MySQL\MySQL Server 5.7\bin\mysql.exe',
+	'C:\wamp64\bin\mysql\mysql*\bin\mysql.exe',
+	'C:\laragon\bin\mysql\mysql*\bin\mysql.exe'
+)
+
+$mysqlClient = $null
+
+foreach ($candidate in $mysqlCandidatePaths) {
+	if ($candidate) {
+		$resolved = Resolve-Path $candidate -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty Path
+		if ($resolved -and (Test-Path $resolved)) {
+			$mysqlClient = $resolved
+			break
+		}
+	}
+}
+
+if (-not $mysqlClient) {
+	$cmd = Get-Command 'mysql' -ErrorAction SilentlyContinue
+	if ($cmd) {
+		$mysqlClient = $cmd.Source
+	}
+}
+
+if (-not $mysqlClient) {
+	Write-Host "⚠️ Warning: mysql.exe was not automatically detected on this device." -ForegroundColor Yellow
+	Write-Host "You can manually import '$(Resolve-Path $sqlFile)' into phpMyAdmin, MySQL Workbench, or run:" -ForegroundColor Cyan
+	Write-Host "  mysql -u root -p < `"$sqlFile`"" -ForegroundColor White
+	return
+}
+
+Write-Host "Using MySQL/MariaDB client at: $mysqlClient" -ForegroundColor Green
 
 $arguments = @('--user', $DatabaseUser)
 if ($DatabasePassword) {
 	$arguments += "--password=$DatabasePassword"
 }
 
-$seedPath = Join-Path $PSScriptRoot '..\Database\seed.sql'
-
-Write-Host 'Creating the OopsGrocery database and Users table...'
-Get-Content -Raw $schemaPath | & $mysqlClient @arguments
+Write-Host "Importing OopsGrocery database schema and initial data..." -ForegroundColor Cyan
+Get-Content -Raw $sqlFile | & $mysqlClient @arguments
 
 if ($LASTEXITCODE -ne 0) {
-	throw "MariaDB returned exit code $LASTEXITCODE. Ensure XAMPP MariaDB is running and the credentials are correct."
+	Write-Host "Import returned exit code $LASTEXITCODE." -ForegroundColor Red
+	Write-Host "If MySQL requires a password on this device, run:" -ForegroundColor Yellow
+	Write-Host "  .\Initialize-Database.ps1 -DatabasePassword `"your_password`"" -ForegroundColor White
+	throw "Failed to initialize OopsGrocery database."
 }
 
-if (Test-Path $seedPath) {
-	Write-Host 'Seeding initial data...'
-	Get-Content -Raw $seedPath | & $mysqlClient @arguments
-	if ($LASTEXITCODE -ne 0) {
-		throw "Failed to apply seed data with exit code $LASTEXITCODE."
-	}
-}
-
-Write-Host 'Database setup and seeding completed successfully.'
+Write-Host "Database setup and seeding completed successfully!" -ForegroundColor Green

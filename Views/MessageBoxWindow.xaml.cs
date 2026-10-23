@@ -11,7 +11,8 @@ public partial class MessageBoxWindow : Window
         TitleText.Text = title;
         MessageText.Text = message;
 
-        // Allow dragging the window anywhere by clicking on the background
+        var createdAt = DateTime.UtcNow;
+
         MouseDown += (_, e) =>
         {
             if (e.ChangedButton == MouseButton.Left)
@@ -22,10 +23,22 @@ public partial class MessageBoxWindow : Window
 
         KeyDown += (_, e) =>
         {
-            if (e.Key is Key.Enter or Key.Escape or Key.Space)
+            if (e.Key == Key.Escape)
             {
                 DialogResult = true;
                 Close();
+                return;
+            }
+
+            // Only accept Enter / Space if the dialog has been open for at least 300ms,
+            // preventing the form submission keystroke from immediately auto-dismissing this alert.
+            if (e.Key is Key.Enter or Key.Space)
+            {
+                if ((DateTime.UtcNow - createdAt).TotalMilliseconds > 300)
+                {
+                    DialogResult = true;
+                    Close();
+                }
             }
         };
 

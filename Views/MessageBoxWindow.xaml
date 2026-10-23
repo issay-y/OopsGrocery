@@ -171,7 +171,6 @@
                         Padding="24">
                     <Button x:Name="ActionButton"
                             Content="Got it, try again"
-                            IsDefault="True"
                             Style="{StaticResource PrimaryModalButton}"
                             Click="ActionButton_OnClick"/>
                 </Border>

@@ -27,14 +27,19 @@ public partial class LoginWindow : Window
         Close();
     }
 
+    // The ViewModel decides the message ("Invalid username or password." for bad
+    // credentials, a separate message if the database is unreachable).
     private void OnLoginFailed(object? sender, string message)
     {
-        MessageBoxWindow.Show(
-            message,
-            "Login Failed",
-            this);
+        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new Action(() =>
+        {
+            MessageBoxWindow.Show(
+                message,
+                "Login Failed",
+                this);
 
-        FocusPasswordField();
+            FocusPasswordField();
+        }));
     }
 
     private void UsernameTextBox_OnKeyDown(object sender, KeyEventArgs e)

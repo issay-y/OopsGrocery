@@ -194,12 +194,13 @@
                 <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
                     <StackPanel>
                         <!-- Admin Navigation -->
-                        <StackPanel Visibility="{Binding IsAdmin, Converter={x:Null}}">
+                        <StackPanel>
                             <StackPanel.Style>
                                 <Style TargetType="StackPanel">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsAdmin}" Value="False">
-                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        <DataTrigger Binding="{Binding IsAdmin}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
@@ -232,12 +233,13 @@
                         </StackPanel>
 
                         <!-- Cashier Navigation -->
-                        <StackPanel Visibility="{Binding IsCashier, Converter={x:Null}}">
+                        <StackPanel>
                             <StackPanel.Style>
                                 <Style TargetType="StackPanel">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsCashier}" Value="False">
-                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        <DataTrigger Binding="{Binding IsCashier}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
