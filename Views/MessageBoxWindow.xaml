@@ -1,0 +1,181 @@
+<Window x:Class="OopsGrocery.Views.MessageBoxWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Oops Grocery Alert"
+        Width="472"
+        SizeToContent="Height"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner"
+        FontFamily="Inter, Segoe UI, Arial"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
+        TextOptions.TextFormattingMode="Display">
+
+    <Window.Resources>
+        <SolidColorBrush x:Key="ForestBrush" Color="#1B4D2B"/>
+        <SolidColorBrush x:Key="YellowBrush" Color="#FFC926"/>
+        <SolidColorBrush x:Key="YellowHoverBrush" Color="#F6BE14"/>
+        <SolidColorBrush x:Key="YellowPressedBrush" Color="#E5B00E"/>
+        <SolidColorBrush x:Key="InkBrush" Color="#1E293B"/>
+        <SolidColorBrush x:Key="MutedBrush" Color="#64748B"/>
+        <SolidColorBrush x:Key="BorderBrushLight" Color="#E2E8F0"/>
+        <!-- Visible edge for the card so it separates from the white login form behind it -->
+        <SolidColorBrush x:Key="CardStrokeBrush" Color="#C5CDD8"/>
+
+        <!-- Primary Action Button -->
+        <Style x:Key="PrimaryModalButton" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource YellowBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource ForestBrush}"/>
+            <Setter Property="FontSize" Value="13.5"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Height" Value="42"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Chrome"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="{StaticResource YellowHoverBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="{StaticResource YellowPressedBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Close "X" Button -->
+        <Style x:Key="CloseIconButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="28"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource MutedBrush}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="14">
+                            <TextBlock Text="✕" FontSize="12" FontWeight="Bold"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Foreground="{TemplateBinding Foreground}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="#F1F5F9"/>
+                                <Setter Property="Foreground" Value="{StaticResource InkBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <!-- 36px of outer room so the shadow is never clipped by the window edge -->
+    <Grid Margin="36">
+        <Border Background="White"
+                CornerRadius="14"
+                BorderBrush="{StaticResource CardStrokeBrush}"
+                BorderThickness="1">
+            <Border.Effect>
+                <DropShadowEffect Color="#0F172A"
+                                  Opacity="0.38"
+                                  BlurRadius="30"
+                                  ShadowDepth="8"
+                                  Direction="270"/>
+            </Border.Effect>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Header: Icon, Title, and Close Button
+                     24px from the top and left; the X button's built-in 8px of space makes the right edge 24px too -->
+                <Grid Grid.Row="0" Margin="24,24,16,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Icon Badge -->
+                    <Border Grid.Column="0"
+                            Width="40" Height="40"
+                            CornerRadius="20"
+                            Background="#FEE2E2"
+                            VerticalAlignment="Center">
+                        <Viewbox Width="20" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Canvas Width="24" Height="24">
+                                <Ellipse Canvas.Left="2" Canvas.Top="2" Width="20" Height="20"
+                                         Stroke="#DC2626" StrokeThickness="1.8"/>
+                                <Line X1="12" Y1="7" X2="12" Y2="13"
+                                      Stroke="#DC2626" StrokeThickness="2.2" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                                <Ellipse Canvas.Left="11" Canvas.Top="15.8" Width="2" Height="2"
+                                         Fill="#DC2626"/>
+                            </Canvas>
+                        </Viewbox>
+                    </Border>
+
+                    <!-- Title -->
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="14,0,0,0">
+                        <TextBlock x:Name="TitleText"
+                                   Text="Oops Grocery Alert"
+                                   FontSize="16"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource ForestBrush}"/>
+                        <TextBlock Text="Store Authentication Notice"
+                                   FontSize="11"
+                                   Foreground="{StaticResource MutedBrush}"
+                                   Margin="0,2,0,0"/>
+                    </StackPanel>
+
+                    <!-- Close 'X' Button (centered on the badge) -->
+                    <Button Grid.Column="2"
+                            VerticalAlignment="Center"
+                            Margin="0,0,-8,0"
+                            Style="{StaticResource CloseIconButtonStyle}"
+                            Click="ActionButton_OnClick"/>
+                </Grid>
+
+                <!-- Body: Message Content -->
+                <Border Grid.Row="1" Margin="24,20,24,24">
+                    <TextBlock x:Name="MessageText"
+                               Text="Invalid username or password. Please try again."
+                               FontSize="13.5"
+                               LineHeight="20"
+                               Foreground="{StaticResource InkBrush}"
+                               TextWrapping="Wrap"/>
+                </Border>
+
+                <!-- Footer: Primary Action Button, 24px on all four sides -->
+                <Border Grid.Row="2"
+                        Background="#F8FAFC"
+                        BorderBrush="{StaticResource BorderBrushLight}"
+                        BorderThickness="0,1,0,0"
+                        CornerRadius="0,0,13,13"
+                        Padding="24">
+                    <Button x:Name="ActionButton"
+                            Content="Got it, try again"
+                            IsDefault="True"
+                            Style="{StaticResource PrimaryModalButton}"
+                            Click="ActionButton_OnClick"/>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

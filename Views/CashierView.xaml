@@ -1,0 +1,549 @@
+<UserControl x:Class="OopsGrocery.Views.CashierView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="720" d:DesignWidth="1020">
+
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="ForestBrush" Color="#1B4D2B"/>
+        <SolidColorBrush x:Key="ForestHoverBrush" Color="#225933"/>
+        <SolidColorBrush x:Key="YellowBrush" Color="#FFC926"/>
+        <SolidColorBrush x:Key="YellowHoverBrush" Color="#F6BE14"/>
+        <SolidColorBrush x:Key="InkBrush" Color="#1E293B"/>
+        <SolidColorBrush x:Key="MutedBrush" Color="#64748B"/>
+        <SolidColorBrush x:Key="BorderBrushLight" Color="#E2E8F0"/>
+        <SolidColorBrush x:Key="CardBackground" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="DangerRed" Color="#EF4444"/>
+
+        <!-- Fast Touch Item Button Style -->
+        <Style x:Key="QuickItemCard" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource CardBackground}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrushLight}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Margin" Value="0,0,12,12"/>
+            <Setter Property="Width" Value="170"/>
+            <Setter Property="Height" Value="100"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="b"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8"
+                                Padding="10">
+                            <ContentPresenter/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="BorderBrush" Value="{StaticResource ForestBrush}"/>
+                                <Setter TargetName="b" Property="Background" Value="#F0FDF4"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="#DCFCE7"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- POS Tender Preset Button -->
+        <Style x:Key="PresetTenderButton" TargetType="Button">
+            <Setter Property="Background" Value="#F1F5F9"/>
+            <Setter Property="Foreground" Value="{StaticResource InkBrush}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="Padding" Value="8,2"/>
+            <Setter Property="Margin" Value="0,0,5,0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}" BorderBrush="{StaticResource BorderBrushLight}" BorderThickness="1" CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#E2E8F0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Qty Step Button -->
+        <Style x:Key="QtyButton" TargetType="Button">
+            <Setter Property="Width" Value="22"/>
+            <Setter Property="Height" Value="22"/>
+            <Setter Property="Background" Value="#F1F5F9"/>
+            <Setter Property="Foreground" Value="{StaticResource InkBrush}"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="#E2E8F0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="20,16,20,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Top POS Register Status Ribbon -->
+        <Border Grid.Row="0"
+                Background="{StaticResource CardBackground}"
+                BorderBrush="{StaticResource BorderBrushLight}"
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="16,10"
+                Margin="0,0,0,14">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Left info -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Border Background="#166534" CornerRadius="6" Padding="8,3" Margin="0,0,10,0">
+                        <TextBlock Text="📟 POS TERMINAL" FontSize="11" FontWeight="Bold" Foreground="White"/>
+                    </Border>
+                    <TextBlock Text="{Binding RegisterId}" FontWeight="Bold" FontSize="13" Foreground="{StaticResource ForestBrush}" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                    <TextBlock Text="• Operator: " FontSize="12.5" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding CashierName}" FontWeight="SemiBold" FontSize="12.5" Foreground="{StaticResource InkBrush}" VerticalAlignment="Center" Margin="0,0,14,0"/>
+                    <TextBlock Text="• Current Sale: " FontSize="12.5" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding CurrentTransactionCode}" FontWeight="Bold" FontSize="12.5" Foreground="#2563EB" VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Right Quick Void / Clear Sale Button -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <Button Content="🗑 Clear / Void Sale"
+                            Command="{Binding VoidSaleCommand}"
+                            Background="Transparent"
+                            BorderBrush="#FECACA"
+                            BorderThickness="1"
+                            Foreground="{StaticResource DangerRed}"
+                            FontSize="11.5"
+                            FontWeight="SemiBold"
+                            Padding="10,5"
+                            Cursor="Hand">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="b" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="5" Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="b" Property="Background" Value="#FEE2E2"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Main Body: Scanner & Touchpad (Left) + Register Tape & Cashier Tender (Right) -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="6*"/>
+                <ColumnDefinition Width="16"/>
+                <ColumnDefinition Width="4*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- ================= LEFT: BARCODE SCANNER & QUICK-TAP PRODUCE ================= -->
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Prominent Barcode / SKU Scanner Input -->
+                <Border Grid.Row="0"
+                        Background="{StaticResource CardBackground}"
+                        BorderBrush="{StaticResource BorderBrushLight}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="12,8"
+                        Margin="0,0,0,12">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="32"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" Text="🔍" FontSize="16" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="1"
+                                 Text="{Binding BarcodeOrSkuInput, UpdateSourceTrigger=PropertyChanged}"
+                                 BorderThickness="0"
+                                 Background="Transparent"
+                                 FontSize="14"
+                                 FontWeight="SemiBold"
+                                 Foreground="{StaticResource InkBrush}"
+                                 VerticalAlignment="Center">
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Return" Command="{Binding ScanBarcodeCommand}"/>
+                            </TextBox.InputBindings>
+                        </TextBox>
+
+                        <Button Grid.Column="2"
+                                Content="⚡ Scan / Add"
+                                Command="{Binding ScanBarcodeCommand}"
+                                Background="{StaticResource ForestBrush}"
+                                Foreground="White"
+                                FontWeight="Bold"
+                                FontSize="12"
+                                Padding="14,6"
+                                Cursor="Hand">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="bd" Background="{TemplateBinding Background}" CornerRadius="5" Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="bd" Property="Background" Value="{StaticResource ForestHoverBrush}"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </Grid>
+                </Border>
+
+                <!-- Feedback / Status message banner -->
+                <Border Grid.Row="1"
+                        Background="#F0FDF4"
+                        BorderBrush="#86EFAC"
+                        BorderThickness="1"
+                        CornerRadius="6"
+                        Padding="10,7"
+                        Margin="0,0,0,10"
+                        Visibility="{Binding StatusMessage, Converter={x:Null}}">
+                    <TextBlock Text="{Binding StatusMessage}" FontSize="12" FontWeight="SemiBold" Foreground="#166534" VerticalAlignment="Center"/>
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding StatusMessage}" Value="">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                </Border>
+
+                <!-- Category quick filter tabs -->
+                <ItemsControl Grid.Row="2" ItemsSource="{Binding Categories}" Margin="0,0,0,10">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Content="{Binding}"
+                                    Command="{Binding DataContext.SelectCategoryCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}"
+                                    Margin="0,0,6,6"
+                                    Cursor="Hand"
+                                    FontSize="11.5"
+                                    FontWeight="SemiBold"
+                                    Padding="10,5">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="pill" Background="#F1F5F9" BorderBrush="{StaticResource BorderBrushLight}" BorderThickness="1" CornerRadius="12" Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" TextElement.Foreground="{StaticResource InkBrush}"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="pill" Property="Background" Value="#E2E8F0"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- Fast Touch / Quick Produce Item Buttons -->
+                <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding DisplayedProducts}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Style="{StaticResource QuickItemCard}"
+                                        Command="{Binding DataContext.QuickAddItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding}">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <!-- Top tag / PLU -->
+                                        <Border Grid.Row="0" Background="#F1F5F9" CornerRadius="4" Padding="4,1" HorizontalAlignment="Left">
+                                            <TextBlock Text="{Binding Tag}" FontSize="9.5" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}"/>
+                                        </Border>
+
+                                        <!-- Product Name -->
+                                        <TextBlock Grid.Row="1" Text="{Binding Name}" FontWeight="Bold" FontSize="12.5" Foreground="{StaticResource InkBrush}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+
+                                        <!-- Price -->
+                                        <Grid Grid.Row="2">
+                                            <TextBlock Text="{Binding FormattedPriceWithUnit}" FontSize="13" FontWeight="Bold" Foreground="{StaticResource ForestBrush}"/>
+                                            <TextBlock HorizontalAlignment="Right" Text="+ Ring Up" FontSize="10.5" FontWeight="SemiBold" Foreground="#2563EB"/>
+                                        </Grid>
+                                    </Grid>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+
+            <!-- ================= RIGHT: CASHIER REGISTER TAPE & TENDER ================= -->
+            <Border Grid.Column="2"
+                    Background="{StaticResource CardBackground}"
+                    BorderBrush="{StaticResource BorderBrushLight}"
+                    BorderThickness="1"
+                    CornerRadius="10"
+                    Padding="18,16">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Receipt Header -->
+                    <Grid Grid.Row="0" Margin="0,0,0,12">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="🧾 " FontSize="16"/>
+                            <TextBlock Text="Register Receipt Tape" FontSize="15" FontWeight="Bold" Foreground="{StaticResource ForestBrush}"/>
+                        </StackPanel>
+                        <Border HorizontalAlignment="Right" Background="{StaticResource ForestBrush}" CornerRadius="10" Padding="8,2">
+                            <TextBlock Text="{Binding TotalItemCount, StringFormat='{}{0} Items'}" FontSize="11" FontWeight="Bold" Foreground="White"/>
+                        </Border>
+                    </Grid>
+
+                    <!-- Rung Up Items List -->
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding RegisterItems}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="{StaticResource BorderBrushLight}" BorderThickness="0,0,0,1" Padding="0,8">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Item details -->
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock Text="{Binding Product.Name}" FontWeight="Bold" FontSize="12.5" Foreground="{StaticResource InkBrush}" TextWrapping="Wrap"/>
+                                                <TextBlock Text="{Binding Product.FormattedPriceWithUnit}" FontSize="11" Foreground="{StaticResource MutedBrush}" Margin="0,1,0,4"/>
+
+                                                <!-- Qty step buttons -->
+                                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Content="−" Style="{StaticResource QtyButton}"
+                                                            Command="{Binding DataContext.DecreaseQtyCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                            CommandParameter="{Binding}"/>
+                                                    <TextBlock Text="{Binding Quantity}" FontWeight="Bold" FontSize="12" Margin="8,0" VerticalAlignment="Center"/>
+                                                    <Button Content="+" Style="{StaticResource QtyButton}"
+                                                            Command="{Binding DataContext.IncreaseQtyCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                            CommandParameter="{Binding}"/>
+                                                </StackPanel>
+                                            </StackPanel>
+
+                                            <!-- Line total & Void -->
+                                            <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top">
+                                                <TextBlock Text="{Binding FormattedTotalPrice}" FontWeight="Bold" FontSize="13" Foreground="{StaticResource ForestBrush}" HorizontalAlignment="Right"/>
+                                                <Button Content="Void" Margin="0,6,0,0"
+                                                        HorizontalAlignment="Right"
+                                                        Background="Transparent"
+                                                        BorderThickness="0"
+                                                        Foreground="{StaticResource DangerRed}"
+                                                        FontSize="11"
+                                                        FontWeight="SemiBold"
+                                                        Cursor="Hand"
+                                                        Command="{Binding DataContext.VoidLineCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+
+                    <!-- Bottom: Subtotal, Tax, Total & Tender Calculator -->
+                    <StackPanel Grid.Row="2" Margin="0,12,0,0">
+                        <Border BorderBrush="{StaticResource BorderBrushLight}" BorderThickness="0,1,0,0" Padding="0,10,0,0">
+                            <StackPanel>
+                                <!-- Subtotal -->
+                                <Grid Margin="0,0,0,4">
+                                    <TextBlock Text="Subtotal" FontSize="12" Foreground="{StaticResource MutedBrush}"/>
+                                    <TextBlock HorizontalAlignment="Right" Text="{Binding FormattedSubtotal}" FontSize="12.5" FontWeight="SemiBold" Foreground="{StaticResource InkBrush}"/>
+                                </Grid>
+
+                                <!-- Tax -->
+                                <Grid Margin="0,0,0,6">
+                                    <TextBlock Text="Sales Tax (8%)" FontSize="12" Foreground="{StaticResource MutedBrush}"/>
+                                    <TextBlock HorizontalAlignment="Right" Text="{Binding FormattedTax}" FontSize="12.5" FontWeight="SemiBold" Foreground="{StaticResource InkBrush}"/>
+                                </Grid>
+
+                                <!-- Big Total -->
+                                <Border Background="#F0FDF4" CornerRadius="6" Padding="12,8" Margin="0,2,0,12">
+                                    <Grid>
+                                        <TextBlock Text="TOTAL DUE" FontWeight="Bold" FontSize="15" Foreground="{StaticResource ForestBrush}" VerticalAlignment="Center"/>
+                                        <TextBlock HorizontalAlignment="Right" Text="{Binding FormattedTotal}" FontWeight="Bold" FontSize="20" Foreground="{StaticResource ForestBrush}"/>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Payment Method Toggle -->
+                                <Grid Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Button Grid.Column="0" Content="💵 Cash"
+                                            Command="{Binding SetPaymentMethodCommand}" CommandParameter="Cash"
+                                            Height="30" Margin="0,0,4,0" Cursor="Hand" FontWeight="Bold" FontSize="12">
+                                        <Button.Style>
+                                            <Style TargetType="Button">
+                                                <Setter Property="Background" Value="#F1F5F9"/>
+                                                <Setter Property="Foreground" Value="{StaticResource InkBrush}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsCashPayment}" Value="True">
+                                                        <Setter Property="Background" Value="{StaticResource ForestBrush}"/>
+                                                        <Setter Property="Foreground" Value="White"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+
+                                    <Button Grid.Column="1" Content="💳 Card Terminal"
+                                            Command="{Binding SetPaymentMethodCommand}" CommandParameter="Card"
+                                            Height="30" Margin="4,0,0,0" Cursor="Hand" FontWeight="Bold" FontSize="12">
+                                        <Button.Style>
+                                            <Style TargetType="Button">
+                                                <Setter Property="Background" Value="#F1F5F9"/>
+                                                <Setter Property="Foreground" Value="{StaticResource InkBrush}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsCardPayment}" Value="True">
+                                                        <Setter Property="Background" Value="{StaticResource ForestBrush}"/>
+                                                        <Setter Property="Foreground" Value="White"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                </Grid>
+
+                                <!-- Cash Tender Calculator (if Cash is selected) -->
+                                <StackPanel Visibility="{Binding IsCashPayment, Converter={x:Null}}">
+                                    <StackPanel.Style>
+                                        <Style TargetType="StackPanel">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsCashPayment}" Value="False">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </StackPanel.Style>
+
+                                    <!-- Quick Tender Buttons -->
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                        <Button Content="Exact" Style="{StaticResource PresetTenderButton}" Command="{Binding QuickTenderCommand}" CommandParameter="Exact"/>
+                                        <Button Content="$20" Style="{StaticResource PresetTenderButton}" Command="{Binding QuickTenderCommand}" CommandParameter="20"/>
+                                        <Button Content="$30" Style="{StaticResource PresetTenderButton}" Command="{Binding QuickTenderCommand}" CommandParameter="30"/>
+                                        <Button Content="$50" Style="{StaticResource PresetTenderButton}" Command="{Binding QuickTenderCommand}" CommandParameter="50"/>
+                                        <Button Content="$100" Style="{StaticResource PresetTenderButton}" Command="{Binding QuickTenderCommand}" CommandParameter="100"/>
+                                    </StackPanel>
+
+                                    <!-- Cash Tendered Input & Change Due Display -->
+                                    <Grid Margin="0,0,0,10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <StackPanel Grid.Column="0" Margin="0,0,4,0">
+                                            <TextBlock Text="Cash Received:" FontSize="10.5" Foreground="{StaticResource MutedBrush}"/>
+                                            <Border BorderBrush="{StaticResource BorderBrushLight}" BorderThickness="1" CornerRadius="4" Padding="6,4" Background="White" Margin="0,2,0,0">
+                                                <TextBox Text="{Binding AmountTenderedText, UpdateSourceTrigger=PropertyChanged}"
+                                                         BorderThickness="0" Background="Transparent" FontWeight="Bold" FontSize="13"/>
+                                            </Border>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="1" Margin="4,0,0,0">
+                                            <TextBlock Text="Change Due:" FontSize="10.5" Foreground="{StaticResource MutedBrush}"/>
+                                            <Border Background="#FEF3C7" CornerRadius="4" Padding="6,4" Margin="0,2,0,0">
+                                                <TextBlock Text="{Binding FormattedChangeDue}" FontWeight="Bold" FontSize="13.5" Foreground="#92400E" HorizontalAlignment="Right"/>
+                                            </Border>
+                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
+
+                                <!-- Big Complete Sale Button -->
+                                <Button Content="✅ Complete Sale &amp; Print"
+                                        Command="{Binding CompleteSaleCommand}"
+                                        Background="{StaticResource YellowBrush}"
+                                        Foreground="{StaticResource ForestBrush}"
+                                        FontWeight="Bold"
+                                        FontSize="13.5"
+                                        Height="38"
+                                        Cursor="Hand">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="6">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="b" Property="Background" Value="{StaticResource YellowHoverBrush}"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>
