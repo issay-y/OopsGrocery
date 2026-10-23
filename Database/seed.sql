@@ -1,12 +1,12 @@
 USE `OopsGrocery`;
 
 -- Default Admin account
--- Username: admin
--- Password: Admin@123
+-- Username: admin (strictly case-sensitive)
+-- Password: Admin.94K (Compliant with 8-10 chars, uppercase, lowercase, digit, allowed special: .)
 INSERT INTO `Users` (`Username`, `PasswordHash`, `Role`, `IsActive`)
 VALUES (
     'admin',
-    'PBKDF2$100000$ebTDWNgJEhDIjleyKaO/8g==$jjc+WSbiV+VLAT5WuSnjwQhSvYnsD2M8vf97KNbDn+A=',
+    'PBKDF2$100000$K9KuYx9Q5RwNvMHTBFwbuw==$SzFwVug/u+Hz2pZbQBRl20LHf16hulnbtU75uafQh1U=',
     'Admin',
     TRUE
 )
@@ -16,12 +16,12 @@ ON DUPLICATE KEY UPDATE
     `IsActive` = VALUES(`IsActive`);
 
 -- Default Cashier account
--- Username: cashier
--- Password: Cashier@123
+-- Username: cashier (strictly case-sensitive)
+-- Password: Cash.71Ny (Compliant with 8-10 chars, uppercase, lowercase, digit, allowed special: .)
 INSERT INTO `Users` (`Username`, `PasswordHash`, `Role`, `IsActive`)
 VALUES (
     'cashier',
-    'PBKDF2$100000$CNSpaFhzG+JAJRxl+0EDnA==$e+uJ3bXQrf+2meCpm61tsz10VUNhG93sUG0FWUUe47g=',
+    'PBKDF2$100000$juEStoErFzuglex33oiGQA==$0llglOiRFCzuJdqRZjJ2ybYdgvQmQmnLD3cKXc5fnEA=',
     'Cashier',
     TRUE
 )

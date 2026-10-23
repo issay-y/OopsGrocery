@@ -28,13 +28,20 @@ public sealed class AuthenticationService
         command.CommandText = """
             SELECT Id, Username, PasswordHash, Role, LastLogin, IsActive
             FROM Users
-            WHERE Username = @username AND IsActive = TRUE
+            WHERE BINARY Username = @username AND IsActive = TRUE
             LIMIT 1;
             """;
         command.Parameters.AddWithValue("@username", username);
 
         using var reader = command.ExecuteReader();
         if (!reader.Read())
+        {
+            return null;
+        }
+
+        var dbUsername = reader.GetString("Username");
+        // Strictly case-sensitive username validation
+        if (!string.Equals(dbUsername, username, StringComparison.Ordinal))
         {
             return null;
         }

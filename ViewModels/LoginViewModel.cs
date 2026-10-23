@@ -83,15 +83,17 @@ public sealed class LoginViewModel : INotifyPropertyChanged
 
     private void Login()
     {
-        if (string.IsNullOrWhiteSpace(Username))
+        var usernameValidation = LoginValidator.ValidateUsername(Username);
+        if (!usernameValidation.IsValid)
         {
-            SetError("Please enter your username.");
+            SetError(usernameValidation.ErrorMessage!);
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(_password))
+        var passwordValidation = LoginValidator.ValidatePassword(_password, Username);
+        if (!passwordValidation.IsValid)
         {
-            SetError("Please enter your password.");
+            SetError(passwordValidation.ErrorMessage!);
             return;
         }
 
@@ -101,7 +103,7 @@ public sealed class LoginViewModel : INotifyPropertyChanged
             var user = authentication.AuthenticateUser(Username.Trim(), _password);
             if (user == null)
             {
-                SetError("Invalid username or password. Please try again.");
+                SetError("Invalid username or password. Note that username is strictly case-sensitive.");
                 return;
             }
 
