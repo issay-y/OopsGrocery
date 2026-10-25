@@ -1,9 +1,11 @@
-﻿<Application x:Class="OopsGrocery.App"
+<Application x:Class="OopsGrocery.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:OopsGrocery"
+             xmlns:conv="clr-namespace:OopsGrocery.Converters"
              StartupUri="Views/LoginWindow.xaml">
     <Application.Resources>
+        <conv:EqualityConverter x:Key="EqualityConverter"/>
         <FontFamily x:Key="SansFont">Inter, Segoe UI, Arial</FontFamily>
     </Application.Resources>
 </Application>

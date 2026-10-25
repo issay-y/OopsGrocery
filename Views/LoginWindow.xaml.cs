@@ -21,10 +21,29 @@ public partial class LoginWindow : Window
 
     private void OnLoginSucceeded(object? sender, EventArgs e)
     {
-        var mainWindow = new MainWindow(_viewModel.LoggedInUser);
-        Application.Current.MainWindow = mainWindow;
-        mainWindow.Show();
-        Close();
+        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new Action(() =>
+        {
+            var user = _viewModel.LoggedInUser;
+            var displayName = !string.IsNullOrWhiteSpace(user?.Username) ? user.Username : "User";
+            var role = user?.Role == Models.Role.Admin ? "Administrator" : "Cashier";
+
+            MessageBoxWindow.Show(
+                $"Welcome back, {displayName}! You have logged in successfully as {role}.",
+                "Login Success",
+                this,
+                MessageBoxType.Success,
+                "Continue",
+                "Store Authentication Verified");
+
+            var mainWindow = new MainWindow(_viewModel.LoggedInUser)
+            {
+                WindowState = WindowState.Maximized
+            };
+            Application.Current.MainWindow = mainWindow;
+            mainWindow.Show();
+            mainWindow.Activate();
+            Close();
+        }));
     }
 
     // The ViewModel decides the message ("Invalid username or password." for bad

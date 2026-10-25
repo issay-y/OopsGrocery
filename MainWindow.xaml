@@ -3,11 +3,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:OopsGrocery.ViewModels"
         xmlns:views="clr-namespace:OopsGrocery.Views"
+        xmlns:ctl="clr-namespace:OopsGrocery.Controls"
         Title="Oops Grocery - Store Workspace"
-        Width="1200"
-        Height="760"
+        Width="1280"
+        Height="800"
         MinWidth="1050"
         MinHeight="680"
+        WindowState="Maximized"
+        WindowStyle="None"
         WindowStartupLocation="CenterScreen"
         Background="#F8FAFC"
         FontFamily="Segoe UI"
@@ -15,10 +18,30 @@
         SnapsToDevicePixels="True"
         TextOptions.TextFormattingMode="Display">
 
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0"
+                      ResizeBorderThickness="4"
+                      CornerRadius="0"
+                      GlassFrameThickness="0"
+                      UseAeroCaptionButtons="False"/>
+    </WindowChrome.WindowChrome>
+
     <Window.Resources>
         <!-- DataTemplates for Dynamic View Switching -->
         <DataTemplate DataType="{x:Type vm:AdminViewModel}">
             <views:AdminView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ProductsInventoryViewModel}">
+            <views:ProductsInventoryView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:TransactionsReportsViewModel}">
+            <views:TransactionsReportsView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:UserManagementViewModel}">
+            <views:UserManagementView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ProfileViewModel}">
+            <views:ProfileView />
         </DataTemplate>
         <DataTemplate DataType="{x:Type vm:CashierViewModel}">
             <views:CashierView />
@@ -44,10 +67,10 @@
         <Style x:Key="SidebarNavButton" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="{StaticResource CreamBrush}"/>
-            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontSize" Value="14"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="Height" Value="40"/>
+            <Setter Property="Height" Value="44"/>
             <Setter Property="Margin" Value="0,2,0,2"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
@@ -79,9 +102,9 @@
         <Style x:Key="SignOutButton" TargetType="Button">
             <Setter Property="Background" Value="#174225"/>
             <Setter Property="Foreground" Value="#F87171"/>
-            <Setter Property="FontSize" Value="12.5"/>
+            <Setter Property="FontSize" Value="14"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Height" Value="38"/>
+            <Setter Property="Height" Value="42"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -104,11 +127,56 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <!-- Window Titlebar Control Buttons -->
+        <Style x:Key="WindowControlButton" TargetType="Button">
+            <Setter Property="Width" Value="34"/>
+            <Setter Property="Height" Value="34"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource MutedBrush}"/>
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets, Segoe UI Symbol, Arial"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="#E2E8F0"/>
+                                <Setter Property="Foreground" Value="{StaticResource InkBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="WindowCloseButton" TargetType="Button" BasedOn="{StaticResource WindowControlButton}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="#EF4444"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="260"/>
+            <ColumnDefinition Width="270"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
@@ -139,56 +207,83 @@
                         <StackPanel VerticalAlignment="Center">
                             <TextBlock Text="OOPs Grocery"
                                        FontFamily="{StaticResource SerifFont}"
-                                       FontSize="19" FontWeight="Bold"
+                                       FontSize="22" FontWeight="Bold"
                                        Foreground="{StaticResource CreamBrush}"/>
                             <TextBlock Text="Good groceries. Better days."
-                                       FontSize="10.5" Foreground="{StaticResource CreamBrush}" Opacity="0.8"/>
+                                       FontSize="12" Foreground="{StaticResource CreamBrush}" Opacity="0.8"/>
                         </StackPanel>
                     </StackPanel>
 
                     <Border Height="1" Background="#2A643B" Margin="0,18,0,16"/>
                 </StackPanel>
 
-                <!-- User Profile Card -->
-                <Border Grid.Row="1"
-                        Background="{StaticResource ForestDarkBrush}"
-                        BorderBrush="#255D37"
-                        BorderThickness="1"
-                        CornerRadius="10"
-                        Padding="12,10"
+                <!-- User Profile Card (Clickable to open ViewProfileWindow pop-up dialog) -->
+                <Button Grid.Row="1"
+                        Command="{Binding OpenProfileDialogCommand}"
+                        ToolTip="Click to view staff profile, credentials &amp; role trivia"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Padding="0"
+                        Cursor="Hand"
                         Margin="0,0,0,22">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="38"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="ProfileCardBorder"
+                                    Background="{StaticResource ForestDarkBrush}"
+                                    BorderBrush="#255D37"
+                                    BorderThickness="1"
+                                    CornerRadius="10"
+                                    Padding="12,10">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="42"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
 
-                        <!-- Avatar Circle -->
-                        <Border Grid.Column="0" Width="34" Height="34"
-                                Background="{StaticResource YellowBrush}"
-                                CornerRadius="17"
-                                HorizontalAlignment="Left">
-                            <TextBlock Text="{Binding Initial}"
-                                       FontWeight="Bold" FontSize="15"
-                                       Foreground="{StaticResource ForestBrush}"
-                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
+                                    <!-- Avatar Circle -->
+                                    <Border Grid.Column="0" Width="38" Height="38"
+                                            Background="{StaticResource YellowBrush}"
+                                            CornerRadius="19"
+                                            HorizontalAlignment="Left">
+                                        <TextBlock Text="{Binding Initial}"
+                                                   FontWeight="Bold" FontSize="17"
+                                                   Foreground="{StaticResource ForestBrush}"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
 
-                        <!-- Username & Role Pill -->
-                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="10,0,0,0">
-                            <TextBlock Text="{Binding DisplayName}"
-                                       FontWeight="Bold" FontSize="13.5"
-                                       Foreground="{StaticResource CreamBrush}"/>
-                            <Border Background="{StaticResource ForestBrush}"
-                                    CornerRadius="8" Padding="6,1.5"
-                                    HorizontalAlignment="Left" Margin="0,3,0,0">
-                                <TextBlock Text="{Binding RoleBadge}"
-                                           FontSize="9.5" FontWeight="Bold"
-                                           Foreground="{StaticResource YellowBrush}"/>
+                                    <!-- Username & Role Pill -->
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="10,0,0,0">
+                                        <TextBlock Text="{Binding DisplayName}"
+                                                   FontWeight="Bold" FontSize="15"
+                                                   Foreground="{StaticResource CreamBrush}"/>
+                                        <Border Background="{StaticResource ForestBrush}"
+                                                CornerRadius="8" Padding="7,2"
+                                                HorizontalAlignment="Left" Margin="0,3,0,0">
+                                            <TextBlock Text="{Binding RoleBadge}"
+                                                       FontSize="11" FontWeight="Bold"
+                                                       Foreground="{StaticResource YellowBrush}"/>
+                                        </Border>
+                                    </StackPanel>
+
+                                    <!-- Subtle pop-up indicator icon -->
+                                    <TextBlock Grid.Column="2" Text="ⓘ"
+                                               FontSize="13" FontWeight="Bold"
+                                               Foreground="{StaticResource CreamBrush}"
+                                               Opacity="0.6"
+                                               VerticalAlignment="Center"
+                                               Margin="4,0,2,0"/>
+                                </Grid>
                             </Border>
-                        </StackPanel>
-                    </Grid>
-                </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="ProfileCardBorder" Property="Background" Value="{StaticResource ForestHoverBrush}"/>
+                                    <Setter TargetName="ProfileCardBorder" Property="BorderBrush" Value="#388E3C"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
 
                 <!-- Navigation Menu Links -->
                 <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
@@ -206,30 +301,71 @@
                                 </Style>
                             </StackPanel.Style>
 
-                            <TextBlock Text="MANAGEMENT PORTAL"
-                                       FontSize="10.5" FontWeight="Bold"
+                            <TextBlock Text="ADMINISTRATION PORTAL"
+                                       FontSize="12" FontWeight="Bold"
                                        Foreground="{StaticResource CreamBrush}" Opacity="0.6"
                                        Margin="6,0,0,8"/>
 
-                            <Button Content="📊   Dashboard Overview"
-                                    Style="{StaticResource SidebarActiveNavButton}"
-                                    Command="{Binding SelectNavCommand}" CommandParameter="Dashboard"/>
+                            <!-- 1. Dashboard -->
+                            <Button Content="📊   Dashboard"
+                                    Command="{Binding SelectNavCommand}" CommandParameter="Dashboard">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource SidebarNavButton}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsDashboardActive}" Value="True">
+                                                <Setter Property="Background" Value="{StaticResource ForestActiveBrush}"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
 
-                            <Button Content="📦   Inventory &amp; Stock"
-                                    Style="{StaticResource SidebarNavButton}"
-                                    Command="{Binding SelectNavCommand}" CommandParameter="Inventory"/>
+                            <!-- 2. Products & Inventory -->
+                            <Button Content="📦   Products &amp; Inventory"
+                                    Command="{Binding SelectNavCommand}" CommandParameter="Products">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource SidebarNavButton}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsProductsActive}" Value="True">
+                                                <Setter Property="Background" Value="{StaticResource ForestActiveBrush}"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
 
-                            <Button Content="📑   Customer Orders"
-                                    Style="{StaticResource SidebarNavButton}"
-                                    Command="{Binding SelectNavCommand}" CommandParameter="Orders"/>
+                            <!-- 3. Transactions & Reports -->
+                            <Button Content="📑   Transactions &amp; Reports"
+                                    Command="{Binding SelectNavCommand}" CommandParameter="Transactions">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource SidebarNavButton}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsTransactionsActive}" Value="True">
+                                                <Setter Property="Background" Value="{StaticResource ForestActiveBrush}"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
 
-                            <Button Content="👥   User Directory"
-                                    Style="{StaticResource SidebarNavButton}"
-                                    Command="{Binding SelectNavCommand}" CommandParameter="Users"/>
+                            <!-- 4. User Management -->
+                            <Button Content="👥   User Management"
+                                    Command="{Binding SelectNavCommand}" CommandParameter="UserManagement">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource SidebarNavButton}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsUserManagementActive}" Value="True">
+                                                <Setter Property="Background" Value="{StaticResource ForestActiveBrush}"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
 
-                            <Button Content="⚙️   Store Settings"
-                                    Style="{StaticResource SidebarNavButton}"
-                                    Command="{Binding SelectNavCommand}" CommandParameter="Settings"/>
                         </StackPanel>
 
                         <!-- Cashier Navigation -->
@@ -246,7 +382,7 @@
                             </StackPanel.Style>
 
                             <TextBlock Text="CASHIER POS TERMINAL"
-                                       FontSize="10.5" FontWeight="Bold"
+                                       FontSize="12" FontWeight="Bold"
                                        Foreground="{StaticResource CreamBrush}" Opacity="0.6"
                                        Margin="6,0,0,8"/>
 
@@ -280,16 +416,16 @@
                             BorderBrush="#255D37"
                             BorderThickness="1"
                             CornerRadius="8"
-                            Padding="10,6"
+                            Padding="10,7"
                             Margin="0,0,0,10">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Ellipse Width="7" Height="7" Fill="#10B981" Margin="0,0,7,0"/>
-                            <TextBlock Text="MariaDB: 3306 Connected" FontSize="11" Foreground="{StaticResource CreamBrush}" Opacity="0.9"/>
+                            <Ellipse Width="8" Height="8" Fill="#10B981" Margin="0,0,8,0"/>
+                            <TextBlock Text="MariaDB: 3306 Connected" FontSize="12.5" Foreground="{StaticResource CreamBrush}" Opacity="0.9"/>
                         </StackPanel>
                     </Border>
 
-                    <!-- Sign Out Button -->
-                    <Button Content="🚪  Sign Out"
+                    <!-- Logout Button -->
+                    <Button Content="🚪  Logout"
                             Style="{StaticResource SignOutButton}"
                             Command="{Binding SignOutCommand}"/>
                 </StackPanel>
@@ -299,7 +435,7 @@
         <!-- ================= RIGHT CONTENT AREA ================= -->
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="64"/>
+                <RowDefinition Height="72"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
@@ -318,43 +454,44 @@
                     <!-- Welcome greeting -->
                     <StackPanel Grid.Column="0" VerticalAlignment="Center">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Welcome, " FontSize="17" FontWeight="Bold" Foreground="{StaticResource InkBrush}"/>
-                            <TextBlock Text="{Binding DisplayName}" FontSize="17" FontWeight="Bold" Foreground="{StaticResource ForestBrush}"/>
-                            <TextBlock Text=" 👋" FontSize="16"/>
+                            <TextBlock Text="Welcome, " FontSize="20" FontWeight="Bold" Foreground="{StaticResource InkBrush}"/>
+                            <TextBlock Text="{Binding DisplayName}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource ForestBrush}"/>
+                            <TextBlock Text=" 👋" FontSize="19"/>
                         </StackPanel>
-                        <TextBlock Text="{Binding RoleGreeting}" FontSize="12" Foreground="{StaticResource MutedBrush}" Margin="0,2,0,0"/>
+                        <TextBlock Text="{Binding RoleGreeting}" FontSize="14" Foreground="{StaticResource MutedBrush}" Margin="0,2,0,0"/>
                     </StackPanel>
 
                     <!-- Top Bar Right Controls -->
                     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                        <!-- Search Box -->
-                        <Border Background="#F1F5F9"
-                                BorderBrush="{StaticResource BorderBrushLight}"
-                                BorderThickness="1"
-                                CornerRadius="8"
-                                Height="34"
-                                Width="220"
-                                Padding="10,0"
-                                Margin="0,0,14,0">
-                            <Grid VerticalAlignment="Center">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="🔍" FontSize="11" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                <TextBox Grid.Column="1"
-                                         BorderThickness="0"
-                                         Background="Transparent"
-                                         FontSize="12"
-                                         VerticalAlignment="Center"
-                                         Foreground="{StaticResource InkBrush}"
-                                         Tag="Search items..."/>
-                            </Grid>
+                        <!-- Live Date & Time Badge -->
+                        <Border Background="#EFF6FF" CornerRadius="8" Padding="14,8" Margin="0,0,12,0">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="📅" FontSize="14" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                <ctl:LiveClockTextBlock FontSize="14"
+                                                        FontWeight="SemiBold"
+                                                        Foreground="#1D4ED8"
+                                                        VerticalAlignment="Center"/>
+                            </StackPanel>
                         </Border>
 
-                        <!-- Date Badge -->
-                        <Border Background="#EFF6FF" CornerRadius="8" Padding="12,6">
-                            <TextBlock Text="📅 Today: Live Store Sync" FontSize="11.5" FontWeight="SemiBold" Foreground="#1D4ED8"/>
+                        <!-- Window Control Buttons (Minimize, Maximize/Restore, Close) -->
+                        <Border Background="#F1F5F9" CornerRadius="8" Padding="3,2">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Button Style="{StaticResource WindowControlButton}"
+                                        Content="&#xE921;"
+                                        ToolTip="Minimize"
+                                        Click="MinimizeButton_OnClick"/>
+                                <Button Style="{StaticResource WindowControlButton}"
+                                        x:Name="RestoreMaximizeBtn"
+                                        Content="&#xE923;"
+                                        ToolTip="Restore Down"
+                                        Click="MaximizeRestoreButton_OnClick"
+                                        Margin="2,0"/>
+                                <Button Style="{StaticResource WindowCloseButton}"
+                                        Content="&#xE8BB;"
+                                        ToolTip="Close Workspace"
+                                        Click="CloseButton_OnClick"/>
+                            </StackPanel>
                         </Border>
                     </StackPanel>
                 </Grid>

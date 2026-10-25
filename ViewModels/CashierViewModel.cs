@@ -105,15 +105,15 @@ public sealed class CashierViewModel : INotifyPropertyChanged
 
     public int TotalItemCount => RegisterItems.Sum(i => i.Quantity);
     public decimal Subtotal => RegisterItems.Sum(i => i.TotalPrice);
-    public decimal Tax => Math.Round(Subtotal * 0.08m, 2); // 8% sales tax
+    public decimal Tax => Math.Round(Subtotal * 0.12m, 2); // 12% VAT
     public decimal Total => Subtotal + Tax;
 
     public decimal ChangeDue => (IsCashPayment && AmountTendered >= Total) ? (AmountTendered - Total) : 0.00m;
 
-    public string FormattedSubtotal => $"${Subtotal:F2}";
-    public string FormattedTax => $"${Tax:F2}";
-    public string FormattedTotal => $"${Total:F2}";
-    public string FormattedChangeDue => $"${ChangeDue:F2}";
+    public string FormattedSubtotal => $"₱{Subtotal:N2}";
+    public string FormattedTax => $"₱{Tax:N2}";
+    public string FormattedTotal => $"₱{Total:N2}";
+    public string FormattedChangeDue => $"₱{ChangeDue:N2}";
 
     public ICommand ScanBarcodeCommand { get; }
     public ICommand QuickAddItemCommand { get; }
@@ -130,38 +130,34 @@ public sealed class CashierViewModel : INotifyPropertyChanged
     {
         CashierName = cashierName;
 
-        Categories = new ObservableCollection<string>
+        var dbProducts = Services.ProductService.GetAllProducts(out _, out _);
+        if (dbProducts != null && dbProducts.Count > 0)
         {
-            "All",
-            "Fresh Produce",
-            "Dairy & Eggs",
-            "Bakery",
-            "Meat & Seafood",
-            "Beverages",
-            "Pantry"
-        };
+            _allProducts = dbProducts.Where(p => !p.IsArchived).ToList();
+        }
+        else
+        {
+            _allProducts = new List<ProductItem>();
+        }
 
-        _allProducts = new List<ProductItem>
+        Categories = new ObservableCollection<string> { "All" };
+        foreach (var c in _allProducts.Select(p => p.Category).Distinct().OrderBy(x => x))
         {
-            new() { Id = 1, Sku = "FP-101", Name = "Organic Honeycrisp Apples", Category = "Fresh Produce", Price = 2.99m, Unit = "lb", StockQuantity = 140, Tag = "PLU 4173" },
-            new() { Id = 2, Sku = "FP-102", Name = "Hass Avocados (Bag of 4)", Category = "Fresh Produce", Price = 4.99m, Unit = "bag", StockQuantity = 60, Tag = "PLU 4046" },
-            new() { Id = 3, Sku = "FP-103", Name = "Cavendish Bananas", Category = "Fresh Produce", Price = 0.69m, Unit = "lb", StockQuantity = 220, Tag = "PLU 4011" },
-            new() { Id = 4, Sku = "DE-201", Name = "Farm Fresh Whole Milk (1 Gal)", Category = "Dairy & Eggs", Price = 4.29m, Unit = "gal", StockQuantity = 38, Tag = "Barcode: 071111" },
-            new() { Id = 5, Sku = "DE-202", Name = "Free-Range Large Eggs (1 Doz)", Category = "Dairy & Eggs", Price = 4.89m, Unit = "doz", StockQuantity = 52, Tag = "Barcode: 072222" },
-            new() { Id = 6, Sku = "BK-301", Name = "Artisan Sourdough Boule", Category = "Bakery", Price = 5.50m, Unit = "loaf", StockQuantity = 18, Tag = "Baked Daily" },
-            new() { Id = 7, Sku = "BK-302", Name = "All-Butter Croissants (4 Pack)", Category = "Bakery", Price = 6.25m, Unit = "pack", StockQuantity = 20, Tag = "Fresh" },
-            new() { Id = 8, Sku = "MS-401", Name = "Wild Atlantic Salmon Fillet", Category = "Meat & Seafood", Price = 14.99m, Unit = "lb", StockQuantity = 25, Tag = "Meat Counter" },
-            new() { Id = 9, Sku = "BV-501", Name = "Cold-Pressed Orange Juice (1L)", Category = "Beverages", Price = 5.25m, Unit = "btl", StockQuantity = 35, Tag = "Barcode: 073333" },
-            new() { Id = 10, Sku = "PT-601", Name = "Extra Virgin Olive Oil (500ml)", Category = "Pantry", Price = 16.75m, Unit = "btl", StockQuantity = 15, Tag = "Barcode: 074444" }
-        };
+            Categories.Add(c);
+        }
 
         DisplayedProducts = new ObservableCollection<ProductItem>(_allProducts);
         RegisterItems = new ObservableCollection<CartItem>();
 
-        // Prepopulate with a ringing sample
-        RingUpItem(_allProducts[0], 2);
-        RingUpItem(_allProducts[3], 1);
-        AmountTenderedText = "20.00";
+        if (_allProducts.Count > 0)
+        {
+            RingUpItem(_allProducts[0], 2);
+        }
+        if (_allProducts.Count > 1)
+        {
+            RingUpItem(_allProducts[1], 1);
+        }
+        AmountTenderedText = "1000.00";
 
         ScanBarcodeCommand = new RelayCommand(ScanBarcode);
 
@@ -170,7 +166,7 @@ public sealed class CashierViewModel : INotifyPropertyChanged
             if (product != null)
             {
                 RingUpItem(product, 1);
-                StatusMessage = $"✓ Rung up {product.Name} (${product.Price:F2}).";
+                StatusMessage = $"✓ Rung up {product.Name} (₱{product.Price:N2}).";
             }
         });
 
@@ -296,15 +292,42 @@ public sealed class CashierViewModel : INotifyPropertyChanged
         var txn = CurrentTransactionCode;
         var paidMethod = PaymentMethod;
 
+        // Record real-time transaction in database
+        var record = new TransactionRecord
+        {
+            ReceiptNumber = $"RCP-{DateTime.Now:yyyyMMdd}-{_transactionNumber:D4}",
+            CashierName = string.IsNullOrWhiteSpace(CashierName) ? "cashier" : CashierName,
+            StationName = RegisterId,
+            TotalItems = TotalItemCount,
+            Subtotal = Subtotal,
+            Tax = Tax,
+            TotalAmount = Total,
+            AmountTendered = AmountTendered,
+            ChangeGiven = ChangeDue,
+            PaymentMethod = "Cash",
+            Status = "Completed",
+            CreatedAt = DateTime.Now,
+            Items = RegisterItems.Select(ci => new TransactionItemRecord
+            {
+                ProductId = ci.Product.Id,
+                Sku = ci.Product.Sku,
+                ProductName = ci.Product.Name,
+                Category = ci.Product.Category,
+                UnitPrice = ci.Product.Price,
+                Quantity = ci.Quantity,
+                TotalPrice = ci.TotalPrice
+            }).ToList()
+        };
+
+        Services.TransactionService.RecordTransaction(record, out _);
+
         RegisterItems.Clear();
         AmountTenderedText = string.Empty;
         _transactionNumber++;
         RecalculateTotals();
         OnPropertyChanged(nameof(CurrentTransactionCode));
 
-        StatusMessage = IsCashPayment
-            ? $"✅ Sale Complete ({txn}) via Cash. Change Given: {change}. Receipt printed."
-            : $"✅ Sale Complete ({txn}) via Card Terminal. Receipt printed.";
+        StatusMessage = $"✅ Sale Complete ({record.ReceiptNumber}) via Cash. Total: {record.TotalAmount:C}, Change Given: {change}. Transaction recorded live!";
     }
 
     private void FilterProducts()

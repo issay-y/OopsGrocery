@@ -4,52 +4,69 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             d:DesignHeight="700" d:DesignWidth="1000">
+             d:DesignHeight="850" d:DesignWidth="1100"
+             FontFamily="Inter, Segoe UI, Arial">
 
     <UserControl.Resources>
+        <!-- Brand Colors -->
         <SolidColorBrush x:Key="ForestBrush" Color="#1B4D2B"/>
+        <SolidColorBrush x:Key="ForestHoverBrush" Color="#225933"/>
         <SolidColorBrush x:Key="YellowBrush" Color="#FFC926"/>
-        <SolidColorBrush x:Key="YellowHoverBrush" Color="#F6BE14"/>
-        <SolidColorBrush x:Key="InkBrush" Color="#222222"/>
-        <SolidColorBrush x:Key="MutedBrush" Color="#666666"/>
-        <SolidColorBrush x:Key="BorderBrushLight" Color="#E5E7EB"/>
+        <SolidColorBrush x:Key="InkBrush" Color="#0F172A"/>
+        <SolidColorBrush x:Key="MutedBrush" Color="#64748B"/>
+        <SolidColorBrush x:Key="BorderBrushLight" Color="#E2E8F0"/>
         <SolidColorBrush x:Key="CardBackground" Color="#FFFFFF"/>
+
+        <!-- Pill Badges -->
+        <SolidColorBrush x:Key="PillPurpleBg" Color="#F5F3FF"/>
+        <SolidColorBrush x:Key="PillPurpleText" Color="#7C3AED"/>
         <SolidColorBrush x:Key="PillGreenBg" Color="#DCFCE7"/>
         <SolidColorBrush x:Key="PillGreenText" Color="#166534"/>
+        <SolidColorBrush x:Key="PillBlueBg" Color="#EFF6FF"/>
+        <SolidColorBrush x:Key="PillBlueText" Color="#1D4ED8"/>
         <SolidColorBrush x:Key="PillAmberBg" Color="#FEF3C7"/>
         <SolidColorBrush x:Key="PillAmberText" Color="#92400E"/>
+        <SolidColorBrush x:Key="PillRedBg" Color="#FEE2E2"/>
+        <SolidColorBrush x:Key="PillRedText" Color="#991B1B"/>
 
-        <Style x:Key="MetricCard" TargetType="Border">
+        <!-- Soft Card Drop Shadow -->
+        <DropShadowEffect x:Key="CardShadow" BlurRadius="12" Direction="270"
+                          Opacity="0.06" ShadowDepth="2" Color="#0F172A"/>
+
+        <!-- Standard Graph / Analytics Container Card -->
+        <Style x:Key="AnalyticsCard" TargetType="Border">
             <Setter Property="Background" Value="{StaticResource CardBackground}"/>
             <Setter Property="BorderBrush" Value="{StaticResource BorderBrushLight}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="CornerRadius" Value="10"/>
-            <Setter Property="Padding" Value="18,16"/>
-            <Setter Property="Margin" Value="0,0,16,0"/>
+            <Setter Property="Padding" Value="20,18"/>
+            <Setter Property="Effect" Value="{StaticResource CardShadow}"/>
         </Style>
 
-        <Style x:Key="SmallActionButton" TargetType="Button">
-            <Setter Property="Background" Value="#F3F4F6"/>
+        <!-- Restock Action Button Style -->
+        <Style x:Key="RestockButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#F8FAFC"/>
             <Setter Property="Foreground" Value="{StaticResource ForestBrush}"/>
-            <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="BorderBrush" Value="{StaticResource BorderBrushLight}"/>
-            <Setter Property="FontSize" Value="11.5"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="12"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="12,5"/>
             <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Padding" Value="10,4"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="Bd"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="5">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
+                        <Border x:Name="bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="#E5E7EB"/>
+                                <Setter TargetName="bd" Property="Background" Value="#DCFCE7"/>
+                                <Setter TargetName="bd" Property="BorderBrush" Value="#86EFAC"/>
+                                <Setter Property="Foreground" Value="#166534"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#BBF7D0"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -59,8 +76,9 @@
     </UserControl.Resources>
 
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-        <StackPanel Margin="28,24,28,32">
-            <!-- Header section -->
+        <StackPanel Margin="30,24,30,36">
+
+            <!-- ================= HEADER SECTION ================= -->
             <Grid Margin="0,0,0,20">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -68,40 +86,48 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel>
-                    <TextBlock Text="Store Management &amp; Analytics"
-                               FontSize="22" FontWeight="Bold"
-                               Foreground="{StaticResource ForestBrush}"/>
-                    <TextBlock Text="Real-time grocery inventory, order pipeline, and performance metrics."
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="🏬 " FontSize="22"/>
+                        <TextBlock Text="Store Management Dashboard"
+                                   FontSize="22" FontWeight="Bold"
+                                   Foreground="{StaticResource ForestBrush}"/>
+                    </StackPanel>
+                    <TextBlock Text="Real-time store performance, 7-day revenue pipeline, and inventory health tracking."
                                FontSize="13" Foreground="{StaticResource MutedBrush}" Margin="0,4,0,0"/>
                 </StackPanel>
 
-                <Button Grid.Column="1"
-                        Content="📊 Export Report"
-                        Command="{Binding QuickExportCommand}"
-                        Background="{StaticResource ForestBrush}"
-                        Foreground="White"
-                        FontWeight="SemiBold"
-                        FontSize="12.5"
-                        Padding="16,8"
-                        Cursor="Hand">
-                    <Button.Template>
-                        <ControlTemplate TargetType="Button">
-                            <Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="b" Property="Background" Value="#2D7D46"/>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Button.Template>
-                </Button>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Content="🔄 Refresh Data"
+                            Command="{Binding RefreshCommand}"
+                            ToolTip="Query database and refresh live dashboard metrics"
+                            Background="#F8FAFC"
+                            Foreground="{StaticResource ForestBrush}"
+                            BorderBrush="{StaticResource BorderBrushLight}"
+                            BorderThickness="1"
+                            FontWeight="SemiBold"
+                            FontSize="12.5"
+                            Padding="14,8"
+                            Cursor="Hand"
+                            Margin="0,0,10,0">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="bd" Property="Background" Value="#E2E8F0"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </StackPanel>
             </Grid>
 
-            <!-- Notification banner if any -->
+            <!-- ================= NOTIFICATION BANNER ================= -->
             <Border Background="#ECFDF5" BorderBrush="#10B981" BorderThickness="1" CornerRadius="6"
-                    Padding="12,10" Margin="0,0,0,18">
+                    Padding="14,10" Margin="0,0,0,18">
                 <Border.Style>
                     <Style TargetType="Border">
                         <Setter Property="Visibility" Value="Visible"/>
@@ -112,220 +138,407 @@
                         </Style.Triggers>
                     </Style>
                 </Border.Style>
-                <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock Text="🔔 " FontSize="14"/>
                     <TextBlock Text="{Binding NotificationMessage}" FontWeight="SemiBold" Foreground="#065F46" VerticalAlignment="Center"/>
                 </StackPanel>
             </Border>
 
-            <!-- Metrics grid (4 cards) -->
+            <!-- ================= TOP ROW: 4 BOXES (UniformGrid, 4 columns) ================= -->
             <UniformGrid Columns="4" Margin="0,0,0,24">
-                <!-- Stat 1: Revenue -->
-                <Border Style="{StaticResource MetricCard}">
-                    <StackPanel>
-                        <Grid>
-                            <TextBlock Text="Total Revenue" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}"/>
-                            <Border HorizontalAlignment="Right" Background="{StaticResource PillGreenBg}" CornerRadius="10" Padding="8,2">
-                                <TextBlock Text="+14.2%" FontSize="10.5" FontWeight="Bold" Foreground="{StaticResource PillGreenText}"/>
-                            </Border>
-                        </Grid>
-                        <TextBlock Text="{Binding TotalRevenue}" FontSize="24" FontWeight="Bold" Foreground="{StaticResource ForestBrush}" Margin="0,8,0,2"/>
-                        <TextBlock Text="vs $16,110.00 last week" FontSize="11" Foreground="{StaticResource MutedBrush}"/>
-                    </StackPanel>
+
+                <!-- 1. Yesterday's Sales (Purple stripe #7C3AED) -->
+                <Border CornerRadius="10" Background="White" BorderBrush="{StaticResource BorderBrushLight}" BorderThickness="1" Effect="{StaticResource CardShadow}" Margin="0,0,16,0">
+                    <Grid>
+                        <!-- Top Accent Stripe -->
+                        <Border Height="4" Background="#7C3AED" VerticalAlignment="Top" CornerRadius="10,10,0,0"/>
+
+                        <StackPanel Margin="20,18,20,16">
+                            <Grid>
+                                <TextBlock Text="Yesterday's Sales" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}"/>
+                                <Border HorizontalAlignment="Right" Background="{StaticResource PillPurpleBg}" CornerRadius="10" Padding="8,2">
+                                    <TextBlock Text="Yesterday" FontSize="10.5" FontWeight="Bold" Foreground="{StaticResource PillPurpleText}"/>
+                                </Border>
+                            </Grid>
+                            <TextBlock Text="{Binding YesterdaySalesText}" FontSize="25" FontWeight="Bold" Foreground="{StaticResource InkBrush}" Margin="0,10,0,3"/>
+                            <TextBlock Text="{Binding YesterdaySalesSubtext}" FontSize="12" FontWeight="Medium" Foreground="{StaticResource MutedBrush}"/>
+                        </StackPanel>
+                    </Grid>
                 </Border>
 
-                <!-- Stat 2: Active Orders -->
-                <Border Style="{StaticResource MetricCard}">
-                    <StackPanel>
-                        <Grid>
-                            <TextBlock Text="Active Orders" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}"/>
-                            <Border HorizontalAlignment="Right" Background="#EFF6FF" CornerRadius="10" Padding="8,2">
-                                <TextBlock Text="Live" FontSize="10.5" FontWeight="Bold" Foreground="#1D4ED8"/>
-                            </Border>
-                        </Grid>
-                        <TextBlock Text="{Binding ActiveOrdersCount}" FontSize="24" FontWeight="Bold" Foreground="{StaticResource ForestBrush}" Margin="0,8,0,2"/>
-                        <TextBlock Text="6 awaiting pickup / delivery" FontSize="11" Foreground="{StaticResource MutedBrush}"/>
-                    </StackPanel>
+                <!-- 2. Today's Sales (Forest stripe #1B4D2B) -->
+                <Border CornerRadius="10" Background="White" BorderBrush="{StaticResource BorderBrushLight}" BorderThickness="1" Effect="{StaticResource CardShadow}" Margin="0,0,16,0">
+                    <Grid>
+                        <!-- Top Accent Stripe -->
+                        <Border Height="4" Background="{StaticResource ForestBrush}" VerticalAlignment="Top" CornerRadius="10,10,0,0"/>
+
+                        <StackPanel Margin="20,18,20,16">
+                            <Grid>
+                                <TextBlock Text="Today's Sales" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}"/>
+                                <Border HorizontalAlignment="Right" Background="{StaticResource PillGreenBg}" CornerRadius="10" Padding="8,2">
+                                    <TextBlock Text="Live Sync" FontSize="10.5" FontWeight="Bold" Foreground="{StaticResource PillGreenText}"/>
+                                </Border>
+                            </Grid>
+                            <TextBlock Text="{Binding TodaySalesText}" FontSize="25" FontWeight="Bold" Foreground="{StaticResource ForestBrush}" Margin="0,10,0,3"/>
+                            <TextBlock Text="{Binding TodaySalesSubtext}" FontSize="12" FontWeight="SemiBold" Foreground="#10B981"/>
+                        </StackPanel>
+                    </Grid>
                 </Border>
 
-                <!-- Stat 3: Low Stock Alerts -->
-                <Border Style="{StaticResource MetricCard}">
-                    <StackPanel>
-                        <Grid>
-                            <TextBlock Text="Low Stock Items" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}"/>
-                            <Border HorizontalAlignment="Right" Background="{StaticResource PillAmberBg}" CornerRadius="10" Padding="8,2">
-                                <TextBlock Text="Attention" FontSize="10.5" FontWeight="Bold" Foreground="{StaticResource PillAmberText}"/>
-                            </Border>
-                        </Grid>
-                        <TextBlock Text="{Binding LowStockCount}" FontSize="24" FontWeight="Bold" Foreground="#B45309" Margin="0,8,0,2"/>
-                        <TextBlock Text="Items with &lt; 10 units in stock" FontSize="11" Foreground="{StaticResource MutedBrush}"/>
-                    </StackPanel>
+                <!-- 3. Today's Transactions (Blue stripe #2563EB) -->
+                <Border CornerRadius="10" Background="White" BorderBrush="{StaticResource BorderBrushLight}" BorderThickness="1" Effect="{StaticResource CardShadow}" Margin="0,0,16,0">
+                    <Grid>
+                        <!-- Top Accent Stripe -->
+                        <Border Height="4" Background="#2563EB" VerticalAlignment="Top" CornerRadius="10,10,0,0"/>
+
+                        <StackPanel Margin="20,18,20,16">
+                            <Grid>
+                                <TextBlock Text="Today's Transactions" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}"/>
+                                <Border HorizontalAlignment="Right" Background="{StaticResource PillBlueBg}" CornerRadius="10" Padding="8,2">
+                                    <TextBlock Text="Completed" FontSize="10.5" FontWeight="Bold" Foreground="{StaticResource PillBlueText}"/>
+                                </Border>
+                            </Grid>
+                            <TextBlock Text="{Binding TodayTransactionsCountText}" FontSize="25" FontWeight="Bold" Foreground="{StaticResource InkBrush}" Margin="0,10,0,3"/>
+                            <TextBlock Text="{Binding TodayTransactionsSubtext}" FontSize="12" Foreground="{StaticResource MutedBrush}"/>
+                        </StackPanel>
+                    </Grid>
                 </Border>
 
-                <!-- Stat 4: Customers -->
-                <Border Style="{StaticResource MetricCard}" Margin="0">
-                    <StackPanel>
-                        <Grid>
-                            <TextBlock Text="Registered Customers" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}"/>
-                            <Border HorizontalAlignment="Right" Background="{StaticResource PillGreenBg}" CornerRadius="10" Padding="8,2">
-                                <TextBlock Text="+12 Today" FontSize="10.5" FontWeight="Bold" Foreground="{StaticResource PillGreenText}"/>
+                <!-- 4. Low Stock Products (Amber stripe #B45309, clickable to Inventory) -->
+                <Button Command="{Binding NavigateToInventoryCommand}"
+                        Cursor="Hand"
+                        ToolTip="Click to open Inventory Catalog and review low stock items"
+                        Margin="0">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="CardBorder" CornerRadius="10" Background="White" BorderBrush="{StaticResource BorderBrushLight}" BorderThickness="1" Effect="{StaticResource CardShadow}">
+                                <Grid>
+                                    <!-- Top Accent Stripe -->
+                                    <Border Height="4" Background="#B45309" VerticalAlignment="Top" CornerRadius="10,10,0,0"/>
+
+                                    <StackPanel Margin="20,18,20,16">
+                                        <Grid>
+                                            <TextBlock Text="Low Stock Products" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}"/>
+                                            <Border HorizontalAlignment="Right" Background="{StaticResource PillAmberBg}" CornerRadius="10" Padding="8,2">
+                                                <TextBlock Text="Inventory →" FontSize="10.5" FontWeight="Bold" Foreground="{StaticResource PillAmberText}"/>
+                                            </Border>
+                                        </Grid>
+                                        <TextBlock Text="{Binding LowStockProductsCountText}" FontSize="25" FontWeight="Bold" Foreground="#B45309" Margin="0,10,0,3"/>
+                                        <TextBlock Text="{Binding LowStockProductsSubtext}" FontSize="12" FontWeight="SemiBold" Foreground="#D97706"/>
+                                    </StackPanel>
+                                </Grid>
                             </Border>
-                        </Grid>
-                        <TextBlock Text="{Binding CustomerCount}" FontSize="24" FontWeight="Bold" Foreground="{StaticResource ForestBrush}" Margin="0,8,0,2"/>
-                        <TextBlock Text="Across local delivery areas" FontSize="11" Foreground="{StaticResource MutedBrush}"/>
-                    </StackPanel>
-                </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="CardBorder" Property="Background" Value="#FFFBEB"/>
+                                    <Setter TargetName="CardBorder" Property="BorderBrush" Value="#FDE68A"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
             </UniformGrid>
 
-            <!-- Bottom content: Inventory (Left) and Orders (Right) -->
-            <Grid>
+            <!-- ================= ROW 1 GRAPHS (2:1 width) ================= -->
+            <Grid Margin="0,0,0,24">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="6.5*"/>
+                    <ColumnDefinition Width="2*"/>
                     <ColumnDefinition Width="20"/>
-                    <ColumnDefinition Width="3.5*"/>
+                    <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Left: Grocery Inventory Table -->
-                <Border Grid.Column="0"
-                        Background="{StaticResource CardBackground}"
-                        BorderBrush="{StaticResource BorderBrushLight}"
-                        BorderThickness="1"
-                        CornerRadius="10"
-                        Padding="20">
-                    <StackPanel>
-                        <Grid Margin="0,0,0,16">
-                            <TextBlock Text="Store Inventory &amp; Stock Levels"
-                                       FontSize="16" FontWeight="Bold"
-                                       Foreground="{StaticResource ForestBrush}"
-                                       VerticalAlignment="Center"/>
-                            <TextBlock HorizontalAlignment="Right"
-                                       Text="Showing 8 priority products"
-                                       FontSize="11.5" Foreground="{StaticResource MutedBrush}"
-                                       VerticalAlignment="Center"/>
+                <!-- a) LINE CHART - Sales over the last 7 days (Width 2*) -->
+                <Border Grid.Column="0" Style="{StaticResource AnalyticsCard}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="260"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Header -->
+                        <Grid Grid.Row="0">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="📈 Sales Revenue (Last 7 Days)"
+                                               FontSize="15" FontWeight="Bold" Foreground="{StaticResource InkBrush}"/>
+                                </StackPanel>
+                                <TextBlock Text="Daily gross revenue with gradient volume fill and today's highlight."
+                                           FontSize="12" Foreground="{StaticResource MutedBrush}" Margin="0,2,0,0"/>
+                            </StackPanel>
+
+                            <Border HorizontalAlignment="Right" Background="{StaticResource PillGreenBg}" CornerRadius="10" Padding="10,3" VerticalAlignment="Top">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="7-Day Total: " FontSize="11" Foreground="{StaticResource PillGreenText}"/>
+                                    <TextBlock Text="{Binding TotalSevenDaySalesFormatted}" FontSize="11" FontWeight="Bold" Foreground="{StaticResource PillGreenText}"/>
+                                </StackPanel>
+                            </Border>
                         </Grid>
 
-                        <!-- Items List -->
-                        <ItemsControl ItemsSource="{Binding Inventory}">
+                        <Border Grid.Row="1" Height="1" Background="{StaticResource BorderBrushLight}" Margin="0,12,0,12"/>
+
+                        <!-- Drawing Canvas for the Line Chart -->
+                        <Canvas Grid.Row="2" x:Name="LineChartCanvas" ClipToBounds="True" Background="Transparent"/>
+                    </Grid>
+                </Border>
+
+                <!-- b) DONUT CHART - Items by category (Width 1*) -->
+                <Border Grid.Column="2" Style="{StaticResource AnalyticsCard}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="180"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Header -->
+                        <Grid Grid.Row="0">
+                            <StackPanel>
+                                <TextBlock Text="🍩 Items by Category"
+                                           FontSize="15" FontWeight="Bold" Foreground="{StaticResource InkBrush}"/>
+                                <TextBlock Text="Top 6 departments + Others."
+                                           FontSize="12" Foreground="{StaticResource MutedBrush}" Margin="0,2,0,0"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <Border Grid.Row="1" Height="1" Background="{StaticResource BorderBrushLight}" Margin="0,12,0,10"/>
+
+                        <!-- Donut Chart Canvas with Center Counter -->
+                        <Grid Grid.Row="2">
+                            <Canvas x:Name="DonutChartCanvas" ClipToBounds="True" Background="Transparent"/>
+                            
+                            <!-- Center Total Counter -->
+                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" IsHitTestVisible="False">
+                                <TextBlock Text="{Binding TotalCategoryItemsCount}"
+                                           FontSize="24" FontWeight="Bold"
+                                           Foreground="{StaticResource InkBrush}"
+                                           HorizontalAlignment="Center"/>
+                                <TextBlock Text="Total Items"
+                                           FontSize="11" FontWeight="Medium"
+                                           Foreground="{StaticResource MutedBrush}"
+                                           HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Legend below Donut -->
+                        <ItemsControl Grid.Row="3" ItemsSource="{Binding CategorySegments}" Margin="0,10,0,0">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border BorderBrush="{StaticResource BorderBrushLight}"
-                                            BorderThickness="0,0,0,1"
-                                            Padding="6,10">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="70"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="100"/>
-                                                <ColumnDefinition Width="80"/>
-                                                <ColumnDefinition Width="70"/>
-                                                <ColumnDefinition Width="80"/>
-                                            </Grid.ColumnDefinitions>
+                                    <Border Background="#F8FAFC" BorderBrush="{StaticResource BorderBrushLight}" BorderThickness="1" CornerRadius="6" Padding="6,3" Margin="0,0,6,6">
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <!-- Color Swatch Circle -->
+                                            <Border Width="8" Height="8" CornerRadius="4" Margin="0,0,6,0">
+                                                <Border.Background>
+                                                    <SolidColorBrush Color="{Binding ColorHex}"/>
+                                                </Border.Background>
+                                            </Border>
+                                            <TextBlock Text="{Binding CategoryName}" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource InkBrush}"/>
+                                            <TextBlock Text="{Binding Count, StringFormat=': {0}'}" FontSize="11" Foreground="{StaticResource MutedBrush}"/>
+                                            <TextBlock Text="{Binding FormattedPercentage, StringFormat=' ({0})'}" FontSize="10.5" Foreground="{StaticResource MutedBrush}"/>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </Border>
+            </Grid>
 
-                                            <!-- Sku -->
-                                            <TextBlock Grid.Column="0" Text="{Binding Sku}" FontSize="11" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center"/>
+            <!-- ================= ROW 2 GRAPHS (equal width) ================= -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
 
-                                            <!-- Name & Category -->
-                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="13" Foreground="{StaticResource InkBrush}"/>
-                                                <TextBlock Text="{Binding Category}" FontSize="11" Foreground="{StaticResource MutedBrush}"/>
-                                            </StackPanel>
+                <!-- c) BAR CHART - Best selling items (last 7 days) (Width 1*) -->
+                <Border Grid.Column="0" Style="{StaticResource AnalyticsCard}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="260"/>
+                        </Grid.RowDefinitions>
 
-                                            <!-- Stock count -->
-                                            <StackPanel Grid.Column="2" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding StockQuantity, StringFormat='{}{0} in stock'}" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource InkBrush}"/>
-                                                <TextBlock Text="{Binding Unit, StringFormat='{}Unit: {0}'}" FontSize="10.5" Foreground="{StaticResource MutedBrush}"/>
-                                            </StackPanel>
+                        <!-- Header -->
+                        <Grid Grid.Row="0">
+                            <StackPanel>
+                                <TextBlock Text="⭐ Best Selling Items"
+                                           FontSize="15" FontWeight="Bold" Foreground="{StaticResource InkBrush}"/>
+                                <TextBlock Text="Top 5 items by quantity sold in the last 7 days."
+                                           FontSize="12" Foreground="{StaticResource MutedBrush}" Margin="0,2,0,0"/>
+                            </StackPanel>
 
-                                            <!-- Price -->
-                                            <TextBlock Grid.Column="3" Text="{Binding FormattedPriceWithUnit}" FontSize="12.5" FontWeight="Bold" Foreground="{StaticResource ForestBrush}" VerticalAlignment="Center"/>
+                            <Border HorizontalAlignment="Right" Background="{StaticResource PillAmberBg}" CornerRadius="10" Padding="8,3" VerticalAlignment="Top">
+                                <TextBlock Text="Top Movers" FontSize="11" FontWeight="Bold" Foreground="{StaticResource PillAmberText}"/>
+                            </Border>
+                        </Grid>
 
-                                            <!-- Tag / Status badge -->
-                                            <Border Grid.Column="4" CornerRadius="10" Padding="6,2" VerticalAlignment="Center" HorizontalAlignment="Left">
-                                                <Border.Style>
-                                                    <Style TargetType="Border">
-                                                        <Setter Property="Background" Value="{StaticResource PillGreenBg}"/>
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding IsLowStock}" Value="True">
-                                                                <Setter Property="Background" Value="{StaticResource PillAmberBg}"/>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </Border.Style>
-                                                <TextBlock Text="{Binding Tag}" FontSize="10.5" FontWeight="Bold">
-                                                    <TextBlock.Style>
-                                                        <Style TargetType="TextBlock">
-                                                            <Setter Property="Foreground" Value="{StaticResource PillGreenText}"/>
+                        <Border Grid.Row="1" Height="1" Background="{StaticResource BorderBrushLight}" Margin="0,12,0,10"/>
+
+                        <!-- Canvas for Vertical Bars -->
+                        <Grid Grid.Row="2">
+                            <!-- Empty State if no sales -->
+                            <Border Padding="20" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding HasNoBestSellers}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <StackPanel HorizontalAlignment="Center">
+                                    <TextBlock Text="⭐" FontSize="32" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                                    <TextBlock Text="No Product Sales in Last 7 Days" FontSize="13.5" FontWeight="Bold" Foreground="{StaticResource InkBrush}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Top moving grocery items will display here automatically as customer checkout orders are processed."
+                                               FontSize="11.5" Foreground="{StaticResource MutedBrush}" HorizontalAlignment="Center" Margin="0,4,0,0" TextAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Bars Canvas -->
+                            <Canvas x:Name="BarChartCanvas" ClipToBounds="True" Background="Transparent">
+                                <Canvas.Style>
+                                    <Style TargetType="Canvas">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding HasNoBestSellers}" Value="True">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Canvas.Style>
+                            </Canvas>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <!-- d) HORIZONTAL BARS - Lowest-stock items (Width 1*) -->
+                <Border Grid.Column="2" Style="{StaticResource AnalyticsCard}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="260"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Header -->
+                        <Grid Grid.Row="0">
+                            <StackPanel>
+                                <TextBlock Text="⚠️ Lowest-Stock Items"
+                                           FontSize="15" FontWeight="Bold" Foreground="{StaticResource InkBrush}"/>
+                                <TextBlock Text="Top 5 items closest to running out (minimum level = 20)."
+                                           FontSize="12" Foreground="{StaticResource MutedBrush}" Margin="0,2,0,0"/>
+                            </StackPanel>
+
+                            <Border HorizontalAlignment="Right" Background="{StaticResource PillRedBg}" CornerRadius="10" Padding="8,3" VerticalAlignment="Top">
+                                <TextBlock Text="Low Stock Alert" FontSize="11" FontWeight="Bold" Foreground="{StaticResource PillRedText}"/>
+                            </Border>
+                        </Grid>
+
+                        <Border Grid.Row="1" Height="1" Background="{StaticResource BorderBrushLight}" Margin="0,12,0,10"/>
+
+                        <!-- List of Lowest-Stock Items -->
+                        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                            <ItemsControl ItemsSource="{Binding LowestStockItems}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="#F8FAFC" BorderBrush="{StaticResource BorderBrushLight}" BorderThickness="1" CornerRadius="8" Padding="12,10" Margin="0,0,0,8">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="130"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <!-- Item Name & Category -->
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                    <TextBlock Text="{Binding Product.Name}"
+                                                               FontWeight="SemiBold" FontSize="13"
+                                                               Foreground="{StaticResource InkBrush}"
+                                                               TextTrimming="CharacterEllipsis"/>
+                                                    <TextBlock Text="{Binding Product.Category}"
+                                                               FontSize="11" Foreground="{StaticResource MutedBrush}"
+                                                               Margin="0,2,0,0"/>
+                                                </StackPanel>
+
+                                                <!-- Status Pill (Low Stock amber / Out of Stock red) -->
+                                                <Border Grid.Column="1" CornerRadius="10" Padding="8,3" Margin="0,0,12,0" VerticalAlignment="Center">
+                                                    <Border.Style>
+                                                        <Style TargetType="Border">
+                                                            <Setter Property="Background" Value="{StaticResource PillAmberBg}"/>
                                                             <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding IsLowStock}" Value="True">
-                                                                    <Setter Property="Foreground" Value="{StaticResource PillAmberText}"/>
+                                                                <DataTrigger Binding="{Binding IsOutOfStock}" Value="True">
+                                                                    <Setter Property="Background" Value="{StaticResource PillRedBg}"/>
                                                                 </DataTrigger>
                                                             </Style.Triggers>
                                                         </Style>
-                                                    </TextBlock.Style>
-                                                </TextBlock>
-                                            </Border>
-
-                                            <!-- Quick action -->
-                                            <Button Grid.Column="5"
-                                                    Content="+ Restock"
-                                                    Style="{StaticResource SmallActionButton}"
-                                                    Command="{Binding DataContext.RestockCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                    CommandParameter="{Binding}"
-                                                    VerticalAlignment="Center"
-                                                    HorizontalAlignment="Right"/>
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </StackPanel>
-                </Border>
-
-                <!-- Right: Recent Orders Feed -->
-                <Border Grid.Column="2"
-                        Background="{StaticResource CardBackground}"
-                        BorderBrush="{StaticResource BorderBrushLight}"
-                        BorderThickness="1"
-                        CornerRadius="10"
-                        Padding="20">
-                    <StackPanel>
-                        <TextBlock Text="Recent Customer Orders"
-                                   FontSize="16" FontWeight="Bold"
-                                   Foreground="{StaticResource ForestBrush}"
-                                   Margin="0,0,0,16"/>
-
-                        <ItemsControl ItemsSource="{Binding RecentOrders}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border BorderBrush="{StaticResource BorderBrushLight}"
-                                            BorderThickness="0,0,0,1"
-                                            Padding="0,12">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                            </Grid.ColumnDefinitions>
-
-                                            <StackPanel Grid.Column="0">
-                                                <TextBlock Text="{Binding OrderId}" FontWeight="Bold" FontSize="13" Foreground="{StaticResource InkBrush}"/>
-                                                <TextBlock Text="{Binding CustomerName}" FontSize="12" Foreground="{StaticResource MutedBrush}" Margin="0,2,0,2"/>
-                                                <TextBlock Text="{Binding PlacedAt}" FontSize="11" Foreground="#9CA3AF"/>
-                                            </StackPanel>
-
-                                            <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding FormattedTotal}" FontWeight="Bold" FontSize="13.5" Foreground="{StaticResource ForestBrush}" HorizontalAlignment="Right"/>
-                                                <Border Background="#F3F4F6" CornerRadius="8" Padding="6,2" Margin="0,4,0,0" HorizontalAlignment="Right">
-                                                    <TextBlock Text="{Binding Status}" FontSize="10" FontWeight="SemiBold" Foreground="#374151"/>
+                                                    </Border.Style>
+                                                    <TextBlock Text="{Binding StatusText}" FontSize="10.5" FontWeight="Bold">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Foreground" Value="{StaticResource PillAmberText}"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding IsOutOfStock}" Value="True">
+                                                                        <Setter Property="Foreground" Value="{StaticResource PillRedText}"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
                                                 </Border>
-                                            </StackPanel>
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </StackPanel>
+
+                                                <!-- Slim Progress Bar + "11 / 20 can" Text -->
+                                                <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                    <TextBlock Text="{Binding DisplayText}"
+                                                               FontSize="11.5" FontWeight="SemiBold"
+                                                               Foreground="{StaticResource InkBrush}"
+                                                               HorizontalAlignment="Right"
+                                                               Margin="0,0,0,4"/>
+
+                                                    <!-- Progress Bar Frame -->
+                                                    <Grid Height="6">
+                                                        <Border Background="#E2E8F0" CornerRadius="3"/>
+                                                        <ProgressBar Value="{Binding StockQuantity}"
+                                                                     Maximum="{Binding MinimumStock}"
+                                                                     Minimum="0"
+                                                                     Height="6"
+                                                                     BorderThickness="0"
+                                                                     Background="Transparent">
+                                                            <ProgressBar.Foreground>
+                                                                <SolidColorBrush Color="{Binding BarColorHex}"/>
+                                                            </ProgressBar.Foreground>
+                                                        </ProgressBar>
+                                                    </Grid>
+                                                </StackPanel>
+
+                                                <!-- Small Restock Button -->
+                                                <Button Grid.Column="3"
+                                                        Content="Restock"
+                                                        Command="{Binding DataContext.RestockCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}"
+                                                        Style="{StaticResource RestockButtonStyle}"
+                                                        VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Grid>
                 </Border>
             </Grid>
+
         </StackPanel>
     </ScrollViewer>
 </UserControl>

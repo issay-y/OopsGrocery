@@ -47,13 +47,29 @@ public sealed class AuthenticationService
             connection.Open();
         }
 
+        bool hasFullName = false;
+        try
+        {
+            using var checkCmd = connection.CreateCommand();
+            checkCmd.CommandText = "SHOW COLUMNS FROM Users LIKE 'FullName';";
+            hasFullName = checkCmd.ExecuteScalar() != null;
+        }
+        catch { }
+
         using var command = connection.CreateCommand();
-        command.CommandText = """
-            SELECT Id, Username, PasswordHash, Role, LastLogin, IsActive
-            FROM Users
-            WHERE BINARY Username = @username AND IsActive = TRUE
-            LIMIT 1;
-            """;
+        command.CommandText = hasFullName
+            ? """
+                SELECT Id, Username, FullName, PasswordHash, Role, LastLogin, IsActive
+                FROM Users
+                WHERE BINARY Username = @username AND IsActive = TRUE
+                LIMIT 1;
+                """
+            : """
+                SELECT Id, Username, PasswordHash, Role, LastLogin, IsActive
+                FROM Users
+                WHERE BINARY Username = @username AND IsActive = TRUE
+                LIMIT 1;
+                """;
         command.Parameters.AddWithValue("@username", username);
 
         using var reader = command.ExecuteReader();
@@ -82,6 +98,9 @@ public sealed class AuthenticationService
         {
             Id = reader.GetInt32("Id"),
             Username = reader.GetString("Username"),
+            FullName = hasFullName && !reader.IsDBNull(reader.GetOrdinal("FullName"))
+                ? reader.GetString("FullName")
+                : string.Empty,
             PasswordHash = storedHash,
             Role = role,
             LastLogin = reader.IsDBNull(reader.GetOrdinal("LastLogin")) ? null : reader.GetDateTime("LastLogin"),

@@ -1,37 +1,49 @@
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Input;
 using OopsGrocery.Commands;
 using OopsGrocery.Models;
+using OopsGrocery.Services;
+using OopsGrocery.Views;
 
 namespace OopsGrocery.ViewModels;
 
 public sealed class AdminViewModel : INotifyPropertyChanged
 {
-    private string _searchQuery = string.Empty;
     private string _notificationMessage = string.Empty;
 
     public event PropertyChangedEventHandler? PropertyChanged;
+    public event Action? RequestNavigateToInventory;
 
-    public string TotalRevenue => "$18,429.50";
-    public int ActiveOrdersCount => 34;
-    public int LowStockCount => 5;
-    public int CustomerCount => 248;
+    // Top 4 Boxes
+    public string YesterdaySalesText { get; private set; } = "₱0.00";
+    public string YesterdaySalesSubtext { get; private set; } = "No sales recorded";
 
-    public ObservableCollection<ProductItem> Inventory { get; }
-    public ObservableCollection<OrderSummary> RecentOrders { get; }
+    public string TodaySalesText { get; private set; } = "₱0.00";
+    public string TodaySalesSubtext { get; private set; } = "No sales recorded";
 
-    public string SearchQuery
-    {
-        get => _searchQuery;
-        set
-        {
-            if (_searchQuery == value) return;
-            _searchQuery = value;
-            OnPropertyChanged();
-        }
-    }
+    public string TodayTransactionsCountText { get; private set; } = "0 Orders";
+    public string TodayTransactionsSubtext { get; private set; } = "₱0.00 avg basket size";
+
+    public string LowStockProductsCountText { get; private set; } = "0 items";
+    public string LowStockProductsSubtext { get; private set; } = "0 low · 0 out of stock";
+
+    public int TotalCategoryItemsCount { get; private set; }
+    public string TotalSevenDaySalesFormatted { get; private set; } = "₱0.00";
+
+    // Chart Data Collections
+    public ObservableCollection<DailySalesPoint> DailySales { get; } = [];
+    public ObservableCollection<CategoryDonutSegment> CategorySegments { get; } = [];
+    public ObservableCollection<BestSellerBarData> BestSellers { get; } = [];
+    public ObservableCollection<LowestStockItemData> LowestStockItems { get; } = [];
+
+    public bool HasBestSellers => BestSellers.Count > 0;
+    public bool HasNoBestSellers => BestSellers.Count == 0;
+    public bool HasLowestStockItems => LowestStockItems.Count > 0;
 
     public string NotificationMessage
     {
@@ -44,44 +56,134 @@ public sealed class AdminViewModel : INotifyPropertyChanged
         }
     }
 
+    public ICommand NavigateToInventoryCommand { get; }
     public ICommand RestockCommand { get; }
-    public ICommand QuickExportCommand { get; }
+    public ICommand RefreshCommand { get; }
 
     public AdminViewModel()
     {
-        Inventory = new ObservableCollection<ProductItem>
+        NavigateToInventoryCommand = new RelayCommand(() =>
         {
-            new() { Id = 101, Sku = "PRD-101", Name = "Organic Honeycrisp Apples", Category = "Fresh Produce", Price = 2.99m, Unit = "lb", StockQuantity = 145, Tag = "Organic" },
-            new() { Id = 102, Sku = "PRD-102", Name = "Farm Fresh Whole Milk (1 Gal)", Category = "Dairy & Eggs", Price = 4.29m, Unit = "gal", StockQuantity = 38, Tag = "Fresh Daily" },
-            new() { Id = 103, Sku = "PRD-103", Name = "Artisan Sourdough Boule", Category = "Bakery", Price = 5.50m, Unit = "loaf", StockQuantity = 6, Tag = "Low Stock" },
-            new() { Id = 104, Sku = "PRD-104", Name = "Wild Caught Atlantic Salmon", Category = "Meat & Seafood", Price = 14.99m, Unit = "lb", StockQuantity = 22, Tag = "Wild" },
-            new() { Id = 105, Sku = "PRD-105", Name = "Extra Virgin Olive Oil (500ml)", Category = "Pantry", Price = 16.75m, Unit = "btl", StockQuantity = 4, Tag = "Low Stock" },
-            new() { Id = 106, Sku = "PRD-106", Name = "Hass Avocados (Bag of 4)", Category = "Fresh Produce", Price = 4.99m, Unit = "bag", StockQuantity = 65, Tag = "Organic" },
-            new() { Id = 107, Sku = "PRD-107", Name = "Free-Range Large Eggs (1 Doz)", Category = "Dairy & Eggs", Price = 4.89m, Unit = "doz", StockQuantity = 52, Tag = "Free Range" },
-            new() { Id = 108, Sku = "PRD-108", Name = "Cold-Pressed Orange Juice (1L)", Category = "Beverages", Price = 5.25m, Unit = "btl", StockQuantity = 8, Tag = "Low Stock" }
-        };
+            RequestNavigateToInventory?.Invoke();
+        });
 
-        RecentOrders = new ObservableCollection<OrderSummary>
+        RestockCommand = new RelayCommand<object>(OnRestockItem);
+        RefreshCommand = new RelayCommand(() =>
         {
-            new() { OrderId = "#ORD-9021", CustomerName = "Emily Watson", TotalAmount = 48.20m, Status = "Processing", PlacedAt = "10 mins ago" },
-            new() { OrderId = "#ORD-9020", CustomerName = "Marcus Chen", TotalAmount = 112.50m, Status = "Ready for Pickup", PlacedAt = "25 mins ago" },
-            new() { OrderId = "#ORD-9019", CustomerName = "Sarah Jenkins", TotalAmount = 29.75m, Status = "Completed", PlacedAt = "1 hr ago" },
-            new() { OrderId = "#ORD-9018", CustomerName = "David Miller", TotalAmount = 86.40m, Status = "Completed", PlacedAt = "2 hrs ago" }
-        };
+            LoadDashboardData();
+            NotificationMessage = $"Dashboard refreshed live at {DateTime.Now:h:mm:ss tt}.";
+        });
 
-        RestockCommand = new RelayCommand<ProductItem>(item =>
+        LoadDashboardData();
+    }
+
+    public void LoadDashboardData()
+    {
+        var data = DashboardService.GetDashboardData(out string? err);
+
+        YesterdaySalesText = data.YesterdaySalesFormatted;
+        YesterdaySalesSubtext = data.YesterdaySubtext;
+
+        TodaySalesText = data.TodaySalesFormatted;
+        TodaySalesSubtext = data.TodaySubtext;
+
+        TodayTransactionsCountText = data.TodayTransactionsFormatted;
+        TodayTransactionsSubtext = data.TodayBasketSubtext;
+
+        LowStockProductsCountText = $"{data.LowStockProductsCount} items";
+        LowStockProductsSubtext = data.LowStockSubtext;
+
+        TotalCategoryItemsCount = data.TotalCategoryItemsCount;
+
+        decimal total7Days = data.DailySales.Sum(d => d.Amount);
+        TotalSevenDaySalesFormatted = $"₱{total7Days:N2}";
+
+        DailySales.Clear();
+        foreach (var d in data.DailySales)
         {
-            if (item != null)
+            DailySales.Add(d);
+        }
+
+        CategorySegments.Clear();
+        foreach (var c in data.CategorySegments)
+        {
+            CategorySegments.Add(c);
+        }
+
+        BestSellers.Clear();
+        foreach (var b in data.BestSellers)
+        {
+            BestSellers.Add(b);
+        }
+
+        LowestStockItems.Clear();
+        foreach (var item in data.LowestStockItems)
+        {
+            LowestStockItems.Add(item);
+        }
+
+        if (!string.IsNullOrWhiteSpace(err))
+        {
+            NotificationMessage = $"Database notice: {err}";
+        }
+
+        NotifyAllProperties();
+    }
+
+    private void OnRestockItem(object? param)
+    {
+        ProductItem? item = null;
+        if (param is LowestStockItemData lowItem)
+        {
+            item = lowItem.Product;
+        }
+        else if (param is ProductItem p)
+        {
+            item = p;
+        }
+
+        if (item == null) return;
+
+        var activeWindow = Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive) ?? Application.Current.MainWindow;
+        var dialog = new RestockProductWindow(item);
+        if (activeWindow != null && activeWindow.IsLoaded)
+        {
+            dialog.Owner = activeWindow;
+        }
+
+        if (dialog.ShowDialog() == true && dialog.RestockedQuantity > 0)
+        {
+            var success = ProductService.RestockProduct(item.Id, dialog.RestockedQuantity, out int newStock, out var error);
+            if (success)
             {
-                item.StockQuantity += 25;
-                NotificationMessage = $"Restocked {item.Name} (+25 units). Current stock: {item.StockQuantity}.";
+                item.StockQuantity = newStock;
+                NotificationMessage = $"Restocked +{dialog.RestockedQuantity} units for '{item.Name}'. New stock level: {newStock} (saved to database).";
             }
-        });
+            else
+            {
+                item.StockQuantity += dialog.RestockedQuantity;
+                NotificationMessage = $"Restocked +{dialog.RestockedQuantity} units locally. Database warning: {error}";
+            }
 
-        QuickExportCommand = new RelayCommand(() =>
-        {
-            NotificationMessage = "Inventory & sales report successfully exported to CSV.";
-        });
+            LoadDashboardData();
+        }
+    }
+
+    private void NotifyAllProperties()
+    {
+        OnPropertyChanged(nameof(YesterdaySalesText));
+        OnPropertyChanged(nameof(YesterdaySalesSubtext));
+        OnPropertyChanged(nameof(TodaySalesText));
+        OnPropertyChanged(nameof(TodaySalesSubtext));
+        OnPropertyChanged(nameof(TodayTransactionsCountText));
+        OnPropertyChanged(nameof(TodayTransactionsSubtext));
+        OnPropertyChanged(nameof(LowStockProductsCountText));
+        OnPropertyChanged(nameof(LowStockProductsSubtext));
+        OnPropertyChanged(nameof(TotalCategoryItemsCount));
+        OnPropertyChanged(nameof(TotalSevenDaySalesFormatted));
+        OnPropertyChanged(nameof(HasBestSellers));
+        OnPropertyChanged(nameof(HasNoBestSellers));
+        OnPropertyChanged(nameof(HasLowestStockItems));
     }
 
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)

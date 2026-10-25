@@ -1,0 +1,784 @@
+<UserControl x:Class="OopsGrocery.Views.TransactionsReportsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:conv="clr-namespace:OopsGrocery.Converters"
+             mc:Ignorable="d"
+             d:DesignHeight="850" d:DesignWidth="1100">
+
+    <UserControl.Resources>
+        <conv:EqualityConverter x:Key="EqualityConverter"/>
+
+        <!-- Color Palette -->
+        <SolidColorBrush x:Key="ForestBrush" Color="#1B4D2B"/>
+        <SolidColorBrush x:Key="ForestHoverBrush" Color="#225933"/>
+        <SolidColorBrush x:Key="YellowBrush" Color="#FFC926"/>
+        <SolidColorBrush x:Key="InkBrush" Color="#0F172A"/>
+        <SolidColorBrush x:Key="MutedBrush" Color="#64748B"/>
+        <SolidColorBrush x:Key="BorderBrushLight" Color="#E2E8F0"/>
+        <SolidColorBrush x:Key="CardBackground" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="PillGreenBg" Color="#DCFCE7"/>
+        <SolidColorBrush x:Key="PillGreenText" Color="#166534"/>
+        <SolidColorBrush x:Key="PillBlueBg" Color="#EFF6FF"/>
+        <SolidColorBrush x:Key="PillBlueText" Color="#1D4ED8"/>
+        <SolidColorBrush x:Key="PillAmberBg" Color="#FEF3C7"/>
+        <SolidColorBrush x:Key="PillAmberText" Color="#92400E"/>
+        <SolidColorBrush x:Key="PillPurpleBg" Color="#F3E8FF"/>
+        <SolidColorBrush x:Key="PillPurpleText" Color="#6B21A8"/>
+
+        <!-- Soft Card Drop Shadow -->
+        <DropShadowEffect x:Key="CardShadow"
+                          BlurRadius="12"
+                          Direction="270"
+                          Opacity="0.06"
+                          ShadowDepth="2"
+                          Color="#0F172A"/>
+
+        <!-- Top KPI Metric Card Style -->
+        <Style x:Key="MetricCardOuter" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource ForestBrush}"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Padding" Value="0,4,0,0"/>
+            <Setter Property="Effect" Value="{StaticResource CardShadow}"/>
+            <Setter Property="Margin" Value="0,0,16,0"/>
+        </Style>
+
+        <Style x:Key="MetricCardInner" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource CardBackground}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrushLight}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="0,0,9,9"/>
+            <Setter Property="Padding" Value="20,16"/>
+        </Style>
+
+        <!-- Standard Graph / Analytics Container Card -->
+        <Style x:Key="AnalyticsCard" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource CardBackground}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrushLight}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Padding" Value="22,20"/>
+            <Setter Property="Effect" Value="{StaticResource CardShadow}"/>
+        </Style>
+
+        <!-- Action Button Style -->
+        <Style x:Key="ActionButton" TargetType="Button">
+            <Setter Property="Background" Value="#F8FAFC"/>
+            <Setter Property="Foreground" Value="{StaticResource ForestBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrushLight}"/>
+            <Setter Property="FontSize" Value="12.5"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="14,8"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#E2E8F0"/>
+                                <Setter TargetName="bd" Property="BorderBrush" Value="#CBD5E1"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="32,24,32,36">
+
+            <!-- ================= HEADER SECTION ================= -->
+            <Grid Margin="0,0,0,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="📊 " FontSize="22"/>
+                        <TextBlock Text="Transactions &amp; Analytics Reports"
+                                   FontSize="22" FontWeight="Bold"
+                                   Foreground="{StaticResource ForestBrush}"/>
+                    </StackPanel>
+                    <TextBlock Text="Store sales breakdown, revenue graphs, cashier register audits, and financial performance."
+                               FontSize="13" Foreground="{StaticResource MutedBrush}" Margin="0,4,0,0"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Border Background="#F1F5F9" CornerRadius="6" Padding="10,6" Margin="0,0,12,0" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding LastRefreshedText}"
+                                   FontSize="11.5"
+                                   FontWeight="SemiBold"
+                                   Foreground="{StaticResource MutedBrush}"
+                                   VerticalAlignment="Center"/>
+                    </Border>
+
+                    <Button Content="🔄 Refresh Analytics"
+                            Command="{Binding RefreshCommand}"
+                            ToolTip="Query database now and refresh real-time metrics"
+                            Style="{StaticResource ActionButton}"
+                            Margin="0,0,10,0"/>
+
+                    <Button Content="📥 Export CSV Report"
+                            Command="{Binding ExportReportCommand}"
+                            ToolTip="Export complete financial ledger, category breakdown, and transactions to CSV"
+                            Background="{StaticResource ForestBrush}"
+                            Foreground="White"
+                            FontWeight="SemiBold"
+                            FontSize="12.5"
+                            Padding="16,8"
+                            Cursor="Hand">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="b" Property="Background" Value="{StaticResource ForestHoverBrush}"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+            <!-- ================= NOTIFICATION BANNER ================= -->
+            <Border Background="#ECFDF5" BorderBrush="#10B981" BorderThickness="1" CornerRadius="6"
+                    Padding="14,10" Margin="0,0,0,18">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Visibility" Value="Visible"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding NotificationMessage}" Value="">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="🔔 " FontSize="14"/>
+                    <TextBlock Text="{Binding NotificationMessage}" FontWeight="SemiBold" Foreground="#065F46" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <!-- ================= TIME RANGE FILTER CONTROL ================= -->
+            <Border Background="{StaticResource CardBackground}"
+                    BorderBrush="{StaticResource BorderBrushLight}"
+                    BorderThickness="1"
+                    CornerRadius="10"
+                    Padding="18,12"
+                    Margin="0,0,0,20"
+                    Effect="{StaticResource CardShadow}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Segmented Period Buttons: Today / This Week / This Month -->
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="Time Range:"
+                                   FontSize="13"
+                                   FontWeight="SemiBold"
+                                   Foreground="{StaticResource InkBrush}"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,12,0"/>
+
+                        <Border Background="#F1F5F9" CornerRadius="8" Padding="3">
+                            <ItemsControl ItemsSource="{Binding Periods}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button Content="{Binding}"
+                                                Command="{Binding DataContext.SelectPeriodCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"
+                                                Cursor="Hand"
+                                                Height="32"
+                                                Padding="16,0"
+                                                FontSize="12.5"
+                                                FontWeight="SemiBold"
+                                                Margin="2,0">
+                                            <Button.Style>
+                                                <Style TargetType="Button">
+                                                    <Setter Property="Background" Value="Transparent"/>
+                                                    <Setter Property="Foreground" Value="{StaticResource MutedBrush}"/>
+                                                    <Setter Property="BorderThickness" Value="0"/>
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="Button">
+                                                                <Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                                                    <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                                </Border>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Value="True">
+                                                            <DataTrigger.Binding>
+                                                                <MultiBinding Converter="{StaticResource EqualityConverter}">
+                                                                    <Binding />
+                                                                    <Binding Path="DataContext.SelectedPeriod" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                                                </MultiBinding>
+                                                            </DataTrigger.Binding>
+                                                            <Setter Property="Background" Value="{StaticResource ForestBrush}"/>
+                                                            <Setter Property="Foreground" Value="White"/>
+                                                            <Setter Property="FontWeight" Value="Bold"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Subtitle text -->
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding PeriodDateRangeSubtitle}"
+                               FontSize="13"
+                               FontWeight="Medium"
+                               Foreground="{StaticResource MutedBrush}"
+                               VerticalAlignment="Center"
+                               Margin="20,0,0,0"/>
+
+                    <!-- Peak Activity Badge -->
+                    <Border Grid.Column="2" Background="#FEF3C7" CornerRadius="12" Padding="12,5" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="🔥 Peak: " FontSize="12" FontWeight="Bold" Foreground="#B45309"/>
+                            <TextBlock Text="{Binding PeakHourText}" FontSize="12" FontWeight="SemiBold" Foreground="#92400E"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- ================= TOP STATISTICAL KPI CARDS (4 CARDS) ================= -->
+            <UniformGrid Columns="4" Margin="0,0,0,24">
+
+                <!-- Card 1: Gross Sales -->
+                <Border Style="{StaticResource MetricCardOuter}" Background="{StaticResource ForestBrush}">
+                    <Border Style="{StaticResource MetricCardInner}">
+                        <StackPanel>
+                            <Grid>
+                                <TextBlock Text="Total Gross Sales" FontSize="12.5" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}"/>
+                                <Border HorizontalAlignment="Right" Background="{StaticResource PillGreenBg}" CornerRadius="10" Padding="8,2">
+                                    <TextBlock Text="Live Sync" FontSize="11" FontWeight="Bold" Foreground="{StaticResource PillGreenText}"/>
+                                </Border>
+                            </Grid>
+                            <TextBlock Text="{Binding TotalGrossSales}" FontSize="26" FontWeight="Bold" Foreground="{StaticResource ForestBrush}" Margin="0,8,0,2"/>
+                            <TextBlock Text="{Binding GrossSalesSubtitle}" FontSize="11.5" FontWeight="SemiBold" Foreground="#10B981"/>
+                        </StackPanel>
+                    </Border>
+                </Border>
+
+                <!-- Card 2: Completed Orders -->
+                <Border Style="{StaticResource MetricCardOuter}" Background="#2563EB">
+                    <Border Style="{StaticResource MetricCardInner}">
+                        <StackPanel>
+                            <Grid>
+                                <TextBlock Text="Completed Orders" FontSize="12.5" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}"/>
+                                <Border HorizontalAlignment="Right" Background="{StaticResource PillBlueBg}" CornerRadius="10" Padding="8,2">
+                                    <TextBlock Text="Checkouts" FontSize="11" FontWeight="Bold" Foreground="{StaticResource PillBlueText}"/>
+                                </Border>
+                            </Grid>
+                            <TextBlock Text="{Binding TotalTransactionsCount}" FontSize="26" FontWeight="Bold" Foreground="{StaticResource InkBrush}" Margin="0,8,0,2"/>
+                            <TextBlock Text="{Binding TransactionsSubtitle}" FontSize="11.5" Foreground="{StaticResource MutedBrush}"/>
+                        </StackPanel>
+                    </Border>
+                </Border>
+
+                <!-- Card 3: Average Basket Size -->
+                <Border Style="{StaticResource MetricCardOuter}" Background="#D97706">
+                    <Border Style="{StaticResource MetricCardInner}">
+                        <StackPanel>
+                            <Grid>
+                                <TextBlock Text="Average Basket Size" FontSize="12.5" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}"/>
+                                <Border HorizontalAlignment="Right" Background="{StaticResource PillAmberBg}" CornerRadius="10" Padding="8,2">
+                                    <TextBlock Text="Per Cart" FontSize="11" FontWeight="Bold" Foreground="{StaticResource PillAmberText}"/>
+                                </Border>
+                            </Grid>
+                            <TextBlock Text="{Binding AverageBasketSize}" FontSize="26" FontWeight="Bold" Foreground="{StaticResource InkBrush}" Margin="0,8,0,2"/>
+                            <TextBlock Text="{Binding BasketSubtitle}" FontSize="11.5" Foreground="{StaticResource MutedBrush}"/>
+                        </StackPanel>
+                    </Border>
+                </Border>
+
+                <!-- Card 4: Tax / VAT Collected -->
+                <Border Style="{StaticResource MetricCardOuter}" Background="#7C3AED" Margin="0">
+                    <Border Style="{StaticResource MetricCardInner}">
+                        <StackPanel>
+                            <Grid>
+                                <TextBlock Text="Tax Collected (VAT)" FontSize="12.5" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}"/>
+                                <Border HorizontalAlignment="Right" Background="{StaticResource PillPurpleBg}" CornerRadius="10" Padding="8,2">
+                                    <TextBlock Text="BIR 12%" FontSize="11" FontWeight="Bold" Foreground="{StaticResource PillPurpleText}"/>
+                                </Border>
+                            </Grid>
+                            <TextBlock Text="{Binding TotalTaxCollected}" FontSize="26" FontWeight="Bold" Foreground="{StaticResource InkBrush}" Margin="0,8,0,2"/>
+                            <TextBlock Text="{Binding TaxSubtitle}" FontSize="11.5" Foreground="{StaticResource MutedBrush}"/>
+                        </StackPanel>
+                    </Border>
+                </Border>
+            </UniformGrid>
+
+            <!-- ================= VISUAL GRAPHS ROW 1 ================= -->
+            <Grid Margin="0,0,0,24">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.6*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="1.4*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- GRAPH 1: Sales Revenue Volume Trend Graph -->
+                <Border Grid.Column="0" Style="{StaticResource AnalyticsCard}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="200"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Graph Header -->
+                        <Grid Grid.Row="0" Margin="0,0,0,4">
+                            <StackPanel>
+                                <TextBlock Text="📈 Revenue Volume &amp; Transaction Trend"
+                                           FontSize="15" FontWeight="Bold" Foreground="{StaticResource InkBrush}"/>
+                                <TextBlock Text="Distribution of gross grocery revenue across chronological time blocks."
+                                           FontSize="12" Foreground="{StaticResource MutedBrush}" Margin="0,2,0,0"/>
+                            </StackPanel>
+
+                            <!-- Legend -->
+                            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                                <Border Background="{StaticResource ForestBrush}" Width="12" Height="12" CornerRadius="3" Margin="0,0,6,0"/>
+                                <TextBlock Text="Standard Volume" FontSize="11.5" Foreground="{StaticResource MutedBrush}" Margin="0,0,14,0" VerticalAlignment="Center"/>
+
+                                <Border Background="{StaticResource YellowBrush}" Width="12" Height="12" CornerRadius="3" Margin="0,0,6,0"/>
+                                <TextBlock Text="Peak Period" FontSize="11.5" FontWeight="SemiBold" Foreground="{StaticResource InkBrush}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Subtle divider line -->
+                        <Border Grid.Row="1" Height="1" Background="{StaticResource BorderBrushLight}" Margin="0,10,0,16"/>
+
+                        <!-- Visual Bar Chart Area with Y-axis guidelines -->
+                        <Grid Grid.Row="2">
+                            <!-- Background horizontal gridlines -->
+                            <Grid VerticalAlignment="Stretch">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Border Grid.Row="0" BorderBrush="#F1F5F9" BorderThickness="0,1,0,0"/>
+                                <Border Grid.Row="1" BorderBrush="#F1F5F9" BorderThickness="0,1,0,0"/>
+                                <Border Grid.Row="2" BorderBrush="#F1F5F9" BorderThickness="0,1,0,0"/>
+                                <Border Grid.Row="3" BorderBrush="#E2E8F0" BorderThickness="0,1,0,0"/>
+                            </Grid>
+
+                            <!-- Bars ItemsControl -->
+                            <ItemsControl ItemsSource="{Binding SalesTrendBars}" VerticalAlignment="Bottom">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Rows="1"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="6,0">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+
+                                            <!-- Formatted Amount text on top of bar -->
+                                            <TextBlock Grid.Row="0"
+                                                       Text="{Binding FormattedAmount}"
+                                                       FontSize="10"
+                                                       FontWeight="Bold"
+                                                       Foreground="{StaticResource InkBrush}"
+                                                       HorizontalAlignment="Center"
+                                                       Margin="0,0,0,4"/>
+
+                                            <!-- Interactive Bar with rounded top and tooltip -->
+                                            <Border Grid.Row="1"
+                                                    Height="{Binding BarHeight}"
+                                                    Width="42"
+                                                    Background="{Binding BarBrush}"
+                                                    CornerRadius="6,6,0,0"
+                                                    Cursor="Hand"
+                                                    ToolTip="{Binding TooltipText}">
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Style.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter Property="Opacity" Value="0.85"/>
+                                                            </Trigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
+                                            </Border>
+
+                                            <!-- Bottom Label (e.g. 8 AM, Mon, Week 1) -->
+                                            <TextBlock Grid.Row="2"
+                                                       Text="{Binding Label}"
+                                                       FontSize="11.5"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="{StaticResource MutedBrush}"
+                                                       HorizontalAlignment="Center"
+                                                       Margin="0,8,0,0"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <!-- CASHIER REGISTER AUDIT (Replaces Payment Tender Split) -->
+                <Border Grid.Column="2" Style="{StaticResource AnalyticsCard}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Header -->
+                        <Grid Grid.Row="0">
+                            <StackPanel>
+                                <TextBlock Text="🧑‍💼 Cashier Register Audit"
+                                           FontSize="15" FontWeight="Bold" Foreground="{StaticResource InkBrush}"/>
+                                <TextBlock Text="Station sales throughput and receipt completion metrics."
+                                           FontSize="12" Foreground="{StaticResource MutedBrush}" Margin="0,2,0,0"/>
+                            </StackPanel>
+
+                            <Border HorizontalAlignment="Right" Background="{StaticResource PillGreenBg}" CornerRadius="10" Padding="8,3" VerticalAlignment="Top">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="💵 " FontSize="11"/>
+                                    <TextBlock Text="Cash Only Store" FontSize="11" FontWeight="Bold" Foreground="{StaticResource PillGreenText}"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <Border Grid.Row="1" Height="1" Background="{StaticResource BorderBrushLight}" Margin="0,10,0,14"/>
+
+                        <!-- Zero Transactions State -->
+                        <Border Grid.Row="2" Background="#F8FAFC" BorderBrush="{StaticResource BorderBrushLight}" BorderThickness="1" CornerRadius="8" Padding="20,36">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding HasNoCashierAudits}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock Text="🧑‍💼" FontSize="34" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                                <TextBlock Text="No Cashier Shifts Recorded Yet" FontSize="13.5" FontWeight="Bold" Foreground="{StaticResource InkBrush}" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Completed register checkout sales will track cashier accuracy and station totals here." FontSize="11.5" Foreground="{StaticResource MutedBrush}" HorizontalAlignment="Center" Margin="0,4,0,0" TextAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Cashier Audit Items -->
+                        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                            <ScrollViewer.Style>
+                                <Style TargetType="ScrollViewer">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding HasNoCashierAudits}" Value="True">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ScrollViewer.Style>
+                            <ItemsControl ItemsSource="{Binding CashierAudits}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="#F8FAFC"
+                                                BorderBrush="{StaticResource BorderBrushLight}"
+                                                BorderThickness="1"
+                                                CornerRadius="8"
+                                                Padding="12,10"
+                                                Margin="0,0,0,10">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <!-- Cashier Avatar Initials -->
+                                                <Border Grid.Column="0"
+                                                        Width="36" Height="36"
+                                                        CornerRadius="18"
+                                                        Background="{Binding AvatarBgBrush}"
+                                                        Margin="0,0,10,0"
+                                                        VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding Initials}"
+                                                               FontWeight="Bold"
+                                                               FontSize="13"
+                                                               Foreground="White"
+                                                               HorizontalAlignment="Center"
+                                                               VerticalAlignment="Center"/>
+                                                </Border>
+
+                                                <!-- Details -->
+                                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="{Binding CashierName}" FontWeight="Bold" FontSize="13" Foreground="{StaticResource InkBrush}"/>
+                                                        <Border Background="{StaticResource PillBlueBg}" CornerRadius="6" Padding="6,1" Margin="8,0,0,0">
+                                                            <TextBlock Text="{Binding StationName}" FontSize="10.5" FontWeight="Bold" Foreground="{StaticResource PillBlueText}"/>
+                                                        </Border>
+                                                    </StackPanel>
+                                                    <TextBlock Text="{Binding SpeedRating}" FontSize="11" Foreground="#059669" FontWeight="SemiBold" Margin="0,2,0,0"/>
+                                                </StackPanel>
+
+                                                <!-- Sales & Receipts -->
+                                                <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding FormattedTotalSales}" FontWeight="Bold" FontSize="13.5" Foreground="{StaticResource ForestBrush}" HorizontalAlignment="Right"/>
+                                                    <TextBlock Text="{Binding ReceiptsProcessed, StringFormat='{}{0} cash receipts'}" FontSize="11" Foreground="{StaticResource MutedBrush}" HorizontalAlignment="Right"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- ================= VISUAL GRAPHS ROW 2 ================= -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- GRAPH 2: Sales by Grocery Category -->
+                <Border Grid.Column="0" Style="{StaticResource AnalyticsCard}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Grid.Row="0">
+                            <TextBlock Text="🛒 Sales by Grocery Category"
+                                       FontSize="15" FontWeight="Bold" Foreground="{StaticResource InkBrush}"/>
+                            <TextBlock Text="Department contribution sorted by gross sales performance."
+                                       FontSize="12" Foreground="{StaticResource MutedBrush}" Margin="0,2,0,0"/>
+                        </StackPanel>
+
+                        <Border Grid.Row="1" Height="1" Background="{StaticResource BorderBrushLight}" Margin="0,10,0,16"/>
+
+                        <!-- Zero Transactions State -->
+                        <Border Grid.Row="2" Background="#F8FAFC" BorderBrush="{StaticResource BorderBrushLight}" BorderThickness="1" CornerRadius="8" Padding="20,36">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding HasNoCategorySales}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock Text="🛒" FontSize="34" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                                <TextBlock Text="No Category Sales Recorded" FontSize="13.5" FontWeight="Bold" Foreground="{StaticResource InkBrush}" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Category department percentages will automatically calculate once orders are placed." FontSize="11.5" Foreground="{StaticResource MutedBrush}" HorizontalAlignment="Center" Margin="0,4,0,0" TextAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Category Progress Bars -->
+                        <ItemsControl Grid.Row="2" ItemsSource="{Binding CategorySales}">
+                            <ItemsControl.Style>
+                                <Style TargetType="ItemsControl">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding HasNoCategorySales}" Value="True">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ItemsControl.Style>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,0,0,12">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="180"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="100"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Icon + Name -->
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Icon}" FontSize="14" Margin="0,0,8,0"/>
+                                            <TextBlock Text="{Binding CategoryName}"
+                                                       FontSize="12.5"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="{StaticResource InkBrush}"
+                                                       TextTrimming="CharacterEllipsis"/>
+                                        </StackPanel>
+
+                                        <!-- Progress Bar -->
+                                        <Grid Grid.Column="1" Height="8" VerticalAlignment="Center" Margin="10,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="{Binding ShareLength}"/>
+                                                <ColumnDefinition Width="{Binding RemainingLength}"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Border Grid.Column="0" Background="{Binding BarBrush}" CornerRadius="4"/>
+                                            <Border Grid.Column="1" Background="#F1F5F9" CornerRadius="0,4,4,0"/>
+                                        </Grid>
+
+                                        <!-- Amount & Share -->
+                                        <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding FormattedRevenue}"
+                                                       FontSize="12.5"
+                                                       FontWeight="Bold"
+                                                       Foreground="{StaticResource ForestBrush}"
+                                                       HorizontalAlignment="Right"/>
+                                            <TextBlock Text="{Binding FormattedPercentage}"
+                                                       FontSize="10.5"
+                                                       Foreground="{StaticResource MutedBrush}"
+                                                       HorizontalAlignment="Right"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </Border>
+
+                <!-- BEST SELLING GROCERY ITEMS (Full Dedicated Card) -->
+                <Border Grid.Column="2" Style="{StaticResource AnalyticsCard}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Header -->
+                        <Grid Grid.Row="0">
+                            <StackPanel>
+                                <TextBlock Text="⭐ Best Selling Grocery Items"
+                                           FontSize="15" FontWeight="Bold" Foreground="{StaticResource InkBrush}"/>
+                                <TextBlock Text="Highest moving product SKUs by volume and revenue."
+                                           FontSize="12" Foreground="{StaticResource MutedBrush}" Margin="0,2,0,0"/>
+                            </StackPanel>
+                            <Border HorizontalAlignment="Right" Background="{StaticResource PillAmberBg}" CornerRadius="10" Padding="8,3" VerticalAlignment="Top">
+                                <TextBlock Text="Top Movers" FontSize="11" FontWeight="Bold" Foreground="{StaticResource PillAmberText}"/>
+                            </Border>
+                        </Grid>
+
+                        <Border Grid.Row="1" Height="1" Background="{StaticResource BorderBrushLight}" Margin="0,10,0,16"/>
+
+                        <!-- Zero Transactions State -->
+                        <Border Grid.Row="2" Background="#F8FAFC" BorderBrush="{StaticResource BorderBrushLight}" BorderThickness="1" CornerRadius="8" Padding="20,36">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding HasNoBestSellers}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock Text="⭐" FontSize="34" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                                <TextBlock Text="No Product Sales Recorded" FontSize="13.5" FontWeight="Bold" Foreground="{StaticResource InkBrush}" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Top moving grocery items will rank here automatically as customers check out." FontSize="11.5" Foreground="{StaticResource MutedBrush}" HorizontalAlignment="Center" Margin="0,4,0,0" TextAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Best Sellers Items List -->
+                        <ItemsControl Grid.Row="2" ItemsSource="{Binding BestSellers}">
+                            <ItemsControl.Style>
+                                <Style TargetType="ItemsControl">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding HasNoBestSellers}" Value="True">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ItemsControl.Style>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="{StaticResource BorderBrushLight}" BorderThickness="0,0,0,1" Padding="4,10">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="34"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Rank Badge -->
+                                            <Border Grid.Column="0" Width="26" Height="26" Background="#F1F5F9" CornerRadius="13" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding RankBadge}" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+
+                                            <!-- Category Icon -->
+                                            <TextBlock Grid.Column="1" Text="{Binding CategoryIcon}" FontSize="16" Margin="8,0,10,0" VerticalAlignment="Center"/>
+
+                                            <!-- Name & Units -->
+                                            <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                <TextBlock Text="{Binding ItemName}"
+                                                           FontWeight="SemiBold"
+                                                           FontSize="13"
+                                                           Foreground="{StaticResource InkBrush}"
+                                                           TextTrimming="CharacterEllipsis"/>
+                                                <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                                                    <TextBlock Text="{Binding Category}" FontSize="11" Foreground="{StaticResource MutedBrush}"/>
+                                                    <TextBlock Text=" • " FontSize="11" Foreground="{StaticResource MutedBrush}"/>
+                                                    <TextBlock Text="{Binding UnitsSold, StringFormat='{}{0} units sold'}"
+                                                               FontSize="11"
+                                                               FontWeight="Medium"
+                                                               Foreground="#059669"/>
+                                                </StackPanel>
+                                            </StackPanel>
+
+                                            <!-- Total Sales Amount -->
+                                            <StackPanel Grid.Column="3" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding FormattedRevenue}"
+                                                           FontWeight="Bold"
+                                                           FontSize="13.5"
+                                                           Foreground="{StaticResource ForestBrush}"
+                                                           HorizontalAlignment="Right"/>
+                                                <TextBlock Text="Gross Sales" FontSize="10.5" Foreground="{StaticResource MutedBrush}" HorizontalAlignment="Right"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </Border>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

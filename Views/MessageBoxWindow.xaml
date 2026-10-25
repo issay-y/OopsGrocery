@@ -56,6 +56,40 @@
             </Setter>
         </Style>
 
+        <!-- Secondary Action Button -->
+        <Style x:Key="SecondaryModalButton" TargetType="Button">
+            <Setter Property="Background" Value="#F1F5F9"/>
+            <Setter Property="Foreground" Value="{StaticResource InkBrush}"/>
+            <Setter Property="FontSize" Value="13.5"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Height" Value="42"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrushLight}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Chrome"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="#E2E8F0"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="#CBD5E1"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <!-- Close "X" Button -->
         <Style x:Key="CloseIconButtonStyle" TargetType="Button">
             <Setter Property="Width" Value="28"/>
@@ -114,21 +148,48 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Icon Badge -->
-                    <Border Grid.Column="0"
+                    <Border x:Name="IconBadgeBorder"
+                            Grid.Column="0"
                             Width="40" Height="40"
                             CornerRadius="20"
                             Background="#FEE2E2"
                             VerticalAlignment="Center">
-                        <Viewbox Width="20" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Canvas Width="24" Height="24">
-                                <Ellipse Canvas.Left="2" Canvas.Top="2" Width="20" Height="20"
-                                         Stroke="#DC2626" StrokeThickness="1.8"/>
-                                <Line X1="12" Y1="7" X2="12" Y2="13"
-                                      Stroke="#DC2626" StrokeThickness="2.2" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
-                                <Ellipse Canvas.Left="11" Canvas.Top="15.8" Width="2" Height="2"
-                                         Fill="#DC2626"/>
-                            </Canvas>
-                        </Viewbox>
+                        <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <!-- Error Alert Icon -->
+                            <Viewbox x:Name="ErrorIcon" Width="20" Height="20">
+                                <Canvas Width="24" Height="24">
+                                    <Ellipse Canvas.Left="2" Canvas.Top="2" Width="20" Height="20"
+                                             Stroke="#DC2626" StrokeThickness="1.8"/>
+                                    <Line X1="12" Y1="7" X2="12" Y2="13"
+                                          Stroke="#DC2626" StrokeThickness="2.2" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                                    <Ellipse Canvas.Left="11" Canvas.Top="15.8" Width="2" Height="2"
+                                             Fill="#DC2626"/>
+                                </Canvas>
+                            </Viewbox>
+
+                            <!-- Success Checkmark Icon -->
+                            <Viewbox x:Name="SuccessIcon" Width="20" Height="20" Visibility="Collapsed">
+                                <Canvas Width="24" Height="24">
+                                    <Ellipse Canvas.Left="2" Canvas.Top="2" Width="20" Height="20"
+                                             Stroke="#16A34A" StrokeThickness="1.8"/>
+                                    <Path Data="M7,12.5 L10.5,16 L17,9"
+                                          Stroke="#16A34A" StrokeThickness="2.2"
+                                          StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"/>
+                                </Canvas>
+                            </Viewbox>
+
+                            <!-- Warning / Question Icon -->
+                            <Viewbox x:Name="QuestionIcon" Width="20" Height="20" Visibility="Collapsed">
+                                <Canvas Width="24" Height="24">
+                                    <Ellipse Canvas.Left="2" Canvas.Top="2" Width="20" Height="20"
+                                             Stroke="#D97706" StrokeThickness="1.8"/>
+                                    <Path Data="M9,9.5 C9,7.5 10.5,6 12,6 C13.5,6 15,7.5 15,9.5 C15,11.5 12.5,12 12.5,14"
+                                          Stroke="#D97706" StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                                    <Ellipse Canvas.Left="11.5" Canvas.Top="16" Width="2" Height="2"
+                                             Fill="#D97706"/>
+                                </Canvas>
+                            </Viewbox>
+                        </Grid>
                     </Border>
 
                     <!-- Title -->
@@ -138,7 +199,8 @@
                                    FontSize="16"
                                    FontWeight="Bold"
                                    Foreground="{StaticResource ForestBrush}"/>
-                        <TextBlock Text="Store Authentication Notice"
+                        <TextBlock x:Name="SubtitleText"
+                                   Text="Store Authentication Notice"
                                    FontSize="11"
                                    Foreground="{StaticResource MutedBrush}"
                                    Margin="0,2,0,0"/>
@@ -149,7 +211,7 @@
                             VerticalAlignment="Center"
                             Margin="0,0,-8,0"
                             Style="{StaticResource CloseIconButtonStyle}"
-                            Click="ActionButton_OnClick"/>
+                            Click="CloseIconButton_OnClick"/>
                 </Grid>
 
                 <!-- Body: Message Content -->
@@ -162,17 +224,39 @@
                                TextWrapping="Wrap"/>
                 </Border>
 
-                <!-- Footer: Primary Action Button, 24px on all four sides -->
+                <!-- Footer: Primary Action Button or Confirmation Grid, 24px on all four sides -->
                 <Border Grid.Row="2"
                         Background="#F8FAFC"
                         BorderBrush="{StaticResource BorderBrushLight}"
                         BorderThickness="0,1,0,0"
                         CornerRadius="0,0,13,13"
                         Padding="24">
-                    <Button x:Name="ActionButton"
-                            Content="Got it, try again"
-                            Style="{StaticResource PrimaryModalButton}"
-                            Click="ActionButton_OnClick"/>
+                    <Grid>
+                        <!-- Single Action Button mode -->
+                        <Button x:Name="ActionButton"
+                                Content="Got it, try again"
+                                Style="{StaticResource PrimaryModalButton}"
+                                Click="ActionButton_OnClick"/>
+
+                        <!-- Confirmation Mode: Cancel + Confirm Buttons -->
+                        <Grid x:Name="ConfirmationGrid" Visibility="Collapsed">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="12"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button x:Name="CancelButton"
+                                    Grid.Column="0"
+                                    Content="Cancel"
+                                    Style="{StaticResource SecondaryModalButton}"
+                                    Click="CancelButton_OnClick"/>
+                            <Button x:Name="ConfirmButton"
+                                    Grid.Column="2"
+                                    Content="Confirm"
+                                    Style="{StaticResource PrimaryModalButton}"
+                                    Click="ConfirmButton_OnClick"/>
+                        </Grid>
+                    </Grid>
                 </Border>
             </Grid>
         </Border>

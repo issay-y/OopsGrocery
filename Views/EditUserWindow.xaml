@@ -1,0 +1,597 @@
+<Window x:Class="OopsGrocery.Views.EditUserWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Edit User Account"
+        Width="860"
+        MaxHeight="1000"
+        SizeToContent="Height"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner"
+        FontFamily="Inter, Segoe UI, Arial"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
+        TextOptions.TextFormattingMode="Display">
+
+    <Window.Resources>
+        <SolidColorBrush x:Key="ForestBrush" Color="#1B4D2B"/>
+        <SolidColorBrush x:Key="ForestHoverBrush" Color="#225933"/>
+        <SolidColorBrush x:Key="YellowBrush" Color="#FFC926"/>
+        <SolidColorBrush x:Key="YellowHoverBrush" Color="#F6BE14"/>
+        <SolidColorBrush x:Key="YellowPressedBrush" Color="#E5B00E"/>
+        <SolidColorBrush x:Key="InkBrush" Color="#1E293B"/>
+        <SolidColorBrush x:Key="MutedBrush" Color="#64748B"/>
+        <SolidColorBrush x:Key="BorderBrushLight" Color="#E2E8F0"/>
+        <SolidColorBrush x:Key="CardStrokeBrush" Color="#C5CDD8"/>
+        <SolidColorBrush x:Key="PlaceholderBrush" Color="#94A3B8"/>
+        <SolidColorBrush x:Key="InputBorderBrush" Color="#CBD5E1"/>
+        <SolidColorBrush x:Key="InputBorderHoverBrush" Color="#94A3B8"/>
+        <SolidColorBrush x:Key="HoverTintBrush" Color="#141B4D2B"/>
+        <SolidColorBrush x:Key="PillGreenBg" Color="#DCFCE7"/>
+        <SolidColorBrush x:Key="PillGreenText" Color="#166534"/>
+        <SolidColorBrush x:Key="PillPurpleBg" Color="#F3E8FF"/>
+        <SolidColorBrush x:Key="PillPurpleText" Color="#6B21A8"/>
+        <SolidColorBrush x:Key="PillBlueBg" Color="#EFF6FF"/>
+        <SolidColorBrush x:Key="PillBlueText" Color="#1D4ED8"/>
+
+        <!-- Field Label -->
+        <Style x:Key="FieldLabel" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="{StaticResource InkBrush}"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+        </Style>
+
+        <!-- Helper / hint text under fields -->
+        <Style x:Key="HintText" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13.5"/>
+            <Setter Property="Foreground" Value="{StaticResource MutedBrush}"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+
+        <!-- "Read-Only" chip text -->
+        <Style x:Key="ReadOnlyChipText" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="{StaticResource MutedBrush}"/>
+        </Style>
+
+        <!-- Placeholder hint -->
+        <Style x:Key="PlaceholderText" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource PlaceholderBrush}"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="IsHitTestVisible" Value="False"/>
+        </Style>
+
+        <!-- Rounded Input Frame for Editable Fields -->
+        <Style x:Key="InputFrame" TargetType="Border">
+            <Setter Property="Height" Value="66"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="{StaticResource InputBorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Padding" Value="16,0"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource InputBorderHoverBrush}"/>
+                </Trigger>
+                <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource ForestBrush}"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                    <Setter Property="Padding" Value="15,0"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Rounded Frame for Read-Only Fields -->
+        <Style x:Key="ReadOnlyFrame" TargetType="Border">
+            <Setter Property="Height" Value="66"/>
+            <Setter Property="Background" Value="#F8FAFC"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrushLight}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Padding" Value="16,0"/>
+        </Style>
+
+        <Style x:Key="BareTextBox" TargetType="TextBox">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="17"/>
+            <Setter Property="Foreground" Value="{StaticResource InkBrush}"/>
+            <Setter Property="CaretBrush" Value="{StaticResource ForestBrush}"/>
+        </Style>
+
+        <Style x:Key="BarePasswordBox" TargetType="PasswordBox">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="17"/>
+            <Setter Property="Foreground" Value="{StaticResource InkBrush}"/>
+            <Setter Property="CaretBrush" Value="{StaticResource ForestBrush}"/>
+        </Style>
+
+        <!-- Eye toggle button -->
+        <Style x:Key="EyeToggleStyle" TargetType="ToggleButton">
+            <Setter Property="Width" Value="38"/>
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="ToolTip" Value="Show password"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="Bg" Background="Transparent" CornerRadius="8">
+                            <Viewbox Width="23" Height="23">
+                                <Canvas Width="24" Height="24">
+                                    <Path Data="M2,12 C6,5.5 18,5.5 22,12 C18,18.5 6,18.5 2,12 Z"
+                                          Stroke="{StaticResource ForestBrush}" StrokeThickness="1.8"
+                                          StrokeLineJoin="Round"/>
+                                    <Ellipse Canvas.Left="9" Canvas.Top="9" Width="6" Height="6"
+                                             Stroke="{StaticResource ForestBrush}" StrokeThickness="1.8"/>
+                                    <Line x:Name="Slash" X1="4" Y1="4" X2="20" Y2="20"
+                                          Stroke="{StaticResource ForestBrush}" StrokeThickness="1.8"
+                                          StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                          Visibility="Collapsed"/>
+                                </Canvas>
+                            </Viewbox>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="{StaticResource HoverTintBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Slash" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsChecked" Value="True">
+                    <Setter Property="ToolTip" Value="Hide password"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Primary Action Button -->
+        <Style x:Key="PrimaryModalButton" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource YellowBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource ForestBrush}"/>
+            <Setter Property="FontSize" Value="17"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Height" Value="66"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Chrome"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="10">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="{StaticResource YellowHoverBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="{StaticResource YellowPressedBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Secondary Modal Button -->
+        <Style x:Key="SecondaryModalButton" TargetType="Button">
+            <Setter Property="Background" Value="#F1F5F9"/>
+            <Setter Property="Foreground" Value="{StaticResource InkBrush}"/>
+            <Setter Property="FontSize" Value="17"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Height" Value="66"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrushLight}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Chrome"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="10">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="#E2E8F0"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="#CBD5E1"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Close "X" Button -->
+        <Style x:Key="CloseIconButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource MutedBrush}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="20">
+                            <TextBlock Text="✕" FontSize="16" FontWeight="Bold"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Foreground="{TemplateBinding Foreground}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="#F1F5F9"/>
+                                <Setter Property="Foreground" Value="{StaticResource InkBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <!-- Outer shadow container -->
+    <Grid Margin="22">
+        <Border Background="White"
+                CornerRadius="16"
+                BorderBrush="{StaticResource CardStrokeBrush}"
+                BorderThickness="1">
+            <Border.Effect>
+                <DropShadowEffect Color="#0F172A"
+                                  Opacity="0.30"
+                                  BlurRadius="22"
+                                  ShadowDepth="6"
+                                  Direction="270"/>
+            </Border.Effect>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Header: Icon Badge, Title, and Close Button -->
+                <Grid Grid.Row="0" Margin="34,36,26,30">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Icon Badge -->
+                    <Border Grid.Column="0"
+                            Width="60" Height="60"
+                            CornerRadius="30"
+                            Background="{StaticResource PillBlueBg}"
+                            VerticalAlignment="Center">
+                        <TextBlock Text="&#xE70F;"
+                                   FontFamily="Segoe MDL2 Assets"
+                                   FontSize="26"
+                                   FontWeight="SemiBold"
+                                   Foreground="{StaticResource PillBlueText}"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                    </Border>
+
+                    <!-- Title & Subtitle -->
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="18,0,0,0">
+                        <TextBlock Text="Edit User Account"
+                                   FontSize="25"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource ForestBrush}"/>
+                        <TextBlock Text="Update security credentials and password for this staff account."
+                                   FontSize="14.5"
+                                   Foreground="{StaticResource MutedBrush}"
+                                   TextWrapping="Wrap"
+                                   Margin="0,4,0,0"/>
+                    </StackPanel>
+
+                    <!-- Close 'X' Button -->
+                    <Button Grid.Column="2"
+                            VerticalAlignment="Center"
+                            Style="{StaticResource CloseIconButtonStyle}"
+                            Click="CloseIconButton_OnClick"/>
+                </Grid>
+
+                <Separator Grid.Row="0" VerticalAlignment="Bottom" Margin="0" Background="{StaticResource BorderBrushLight}"/>
+
+                <!-- Body: Input Fields with Two-Column Layout -->
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Margin="34,34,34,34">
+
+                        <!-- Field 1: Name (Read-Only) -->
+                        <StackPanel Margin="0,0,0,30">
+                            <TextBlock Style="{StaticResource FieldLabel}" Text="Name"/>
+                            <Border Style="{StaticResource ReadOnlyFrame}">
+                                <Grid VerticalAlignment="Center">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBox x:Name="NameTextBox"
+                                             Grid.Column="0"
+                                             Style="{StaticResource BareTextBox}"
+                                             IsReadOnly="True"
+                                             Focusable="False"
+                                             Foreground="#334155"
+                                             FontWeight="Medium"/>
+
+                                    <Border Grid.Column="1"
+                                            Background="#F1F5F9"
+                                            BorderBrush="{StaticResource BorderBrushLight}"
+                                            BorderThickness="1"
+                                            CornerRadius="5"
+                                            Padding="10,4"
+                                            VerticalAlignment="Center">
+                                        <TextBlock Text="🔒 Read-Only" Style="{StaticResource ReadOnlyChipText}"/>
+                                    </Border>
+                                </Grid>
+                            </Border>
+                            <TextBlock Text="Staff full name is recorded at account registration and cannot be modified here."
+                                       Style="{StaticResource HintText}" Margin="2,10,0,0"/>
+                        </StackPanel>
+
+                        <!-- Fields 2 & 3: Username & Role (Side by Side, Both Read-Only) -->
+                        <Grid Margin="0,0,0,30">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="24"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Column 0: Username (Read-Only) -->
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Style="{StaticResource FieldLabel}" Text="Username"/>
+                                <Border Style="{StaticResource ReadOnlyFrame}">
+                                    <Grid VerticalAlignment="Center">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBox x:Name="UsernameTextBox"
+                                                 Grid.Column="0"
+                                                 Style="{StaticResource BareTextBox}"
+                                                 IsReadOnly="True"
+                                                 Focusable="False"
+                                                 Foreground="#334155"
+                                                 FontWeight="Medium"/>
+
+                                        <Border Grid.Column="1"
+                                                Background="#F1F5F9"
+                                                BorderBrush="{StaticResource BorderBrushLight}"
+                                                BorderThickness="1"
+                                                CornerRadius="5"
+                                                Padding="10,4"
+                                                VerticalAlignment="Center">
+                                            <TextBlock Text="🔒 Read-Only" Style="{StaticResource ReadOnlyChipText}"/>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                                <TextBlock Text="System login username is uneditable."
+                                           Style="{StaticResource HintText}" Margin="2,10,0,0"/>
+                            </StackPanel>
+
+                            <!-- Column 1: Role (Read-Only) -->
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Style="{StaticResource FieldLabel}" Text="Role"/>
+                                <Border Style="{StaticResource ReadOnlyFrame}">
+                                    <Grid VerticalAlignment="Center">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Dynamic Role Badge -->
+                                        <Border x:Name="RoleBadgeBorder"
+                                                Grid.Column="0"
+                                                Background="{StaticResource PillGreenBg}"
+                                                CornerRadius="7"
+                                                Padding="10,4"
+                                                VerticalAlignment="Center">
+                                            <TextBlock x:Name="RoleBadgeText"
+                                                       Text="🛒 CASHIER"
+                                                       FontSize="14"
+                                                       FontWeight="Bold"
+                                                       Foreground="{StaticResource PillGreenText}"/>
+                                        </Border>
+
+                                        <TextBlock x:Name="RoleSubtext"
+                                                   Grid.Column="1"
+                                                   Text="POS Terminal"
+                                                   FontSize="14.5"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource InkBrush}"
+                                                   VerticalAlignment="Center"
+                                                   Margin="12,0,0,0"/>
+
+                                        <Border Grid.Column="2"
+                                                Background="#F1F5F9"
+                                                BorderBrush="{StaticResource BorderBrushLight}"
+                                                BorderThickness="1"
+                                                CornerRadius="5"
+                                                Padding="10,4"
+                                                VerticalAlignment="Center">
+                                            <TextBlock Text="🔒 Read-Only" Style="{StaticResource ReadOnlyChipText}"/>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                                <TextBlock Text="Access role assignments are fixed."
+                                           Style="{StaticResource HintText}" Margin="2,10,0,0"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Fields 4 & 5: New Password & Confirm Password (Side by Side, Editable) -->
+                        <Grid Margin="0,0,0,34">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="24"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Column 0: New Password -->
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Style="{StaticResource FieldLabel}" Text="New Password"/>
+                                <Border Style="{StaticResource InputFrame}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <PasswordBox x:Name="NewPasswordInput"
+                                                     Grid.Column="0"
+                                                     Style="{StaticResource BarePasswordBox}"
+                                                     PasswordChanged="NewPasswordInput_OnPasswordChanged"/>
+                                        <TextBox x:Name="RevealedNewPasswordTextBox"
+                                                 Grid.Column="0"
+                                                 Visibility="Collapsed"
+                                                 Style="{StaticResource BareTextBox}"
+                                                 TextChanged="RevealedNewPasswordTextBox_OnTextChanged"/>
+
+                                        <TextBlock x:Name="NewPasswordPlaceholder"
+                                                   Grid.Column="0"
+                                                   Style="{StaticResource PlaceholderText}"
+                                                   Text="Leave blank to keep existing"/>
+
+                                        <ToggleButton x:Name="ShowNewPasswordToggle"
+                                                      Grid.Column="1"
+                                                      Style="{StaticResource EyeToggleStyle}"
+                                                      Click="ShowNewPasswordToggle_OnClick"/>
+                                    </Grid>
+                                </Border>
+                                <TextBlock Text="Leave blank if no password change is intended."
+                                           Style="{StaticResource HintText}" Margin="2,10,0,0"/>
+                            </StackPanel>
+
+                            <!-- Column 1: Confirm Password -->
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Style="{StaticResource FieldLabel}" Text="Confirm Password"/>
+                                <Border Style="{StaticResource InputFrame}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <PasswordBox x:Name="ConfirmPasswordInput"
+                                                     Grid.Column="0"
+                                                     Style="{StaticResource BarePasswordBox}"
+                                                     PasswordChanged="ConfirmPasswordInput_OnPasswordChanged"/>
+                                        <TextBox x:Name="RevealedConfirmPasswordTextBox"
+                                                 Grid.Column="0"
+                                                 Visibility="Collapsed"
+                                                 Style="{StaticResource BareTextBox}"
+                                                 TextChanged="RevealedConfirmPasswordTextBox_OnTextChanged"/>
+
+                                        <TextBlock x:Name="ConfirmPasswordPlaceholder"
+                                                   Grid.Column="0"
+                                                   Style="{StaticResource PlaceholderText}"
+                                                   Text="Re-enter new password"/>
+
+                                        <ToggleButton x:Name="ShowConfirmPasswordToggle"
+                                                      Grid.Column="1"
+                                                      Style="{StaticResource EyeToggleStyle}"
+                                                      Click="ShowConfirmPasswordToggle_OnClick"/>
+                                    </Grid>
+                                </Border>
+                                <TextBlock Text="Must match the new password exactly."
+                                           Style="{StaticResource HintText}" Margin="2,10,0,0"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Password Security Policy Info Card -->
+                        <Border Background="#F8FAFC"
+                                BorderBrush="{StaticResource BorderBrushLight}"
+                                BorderThickness="1"
+                                CornerRadius="10"
+                                Padding="24,22">
+                            <StackPanel>
+                                <TextBlock Text="🛡️  Password Requirements &amp; Security Rules"
+                                           FontSize="15"
+                                           FontWeight="Bold"
+                                           Foreground="{StaticResource ForestBrush}"/>
+
+                                <Grid Margin="0,14,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="• Length: strictly 8 to 10 characters" FontSize="14" Foreground="{StaticResource MutedBrush}"/>
+                                        <TextBlock Text="• At least 1 uppercase (A–Z)" FontSize="14" Foreground="{StaticResource MutedBrush}" Margin="0,9,0,0"/>
+                                        <TextBlock Text="• At least 1 numeric digit (0–9)" FontSize="14" Foreground="{StaticResource MutedBrush}" Margin="0,9,0,0"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="• At least 1 allowed symbol: . , _ or -" FontSize="14" Foreground="{StaticResource MutedBrush}"/>
+                                        <TextBlock Text="• Cannot match the username" FontSize="14" Foreground="{StaticResource MutedBrush}" Margin="0,9,0,0"/>
+                                        <TextBlock Text="• No repeating or sequential patterns (123, aaa)" FontSize="14" Foreground="{StaticResource MutedBrush}" Margin="0,9,0,0"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <Separator Margin="0,16,0,12" Background="{StaticResource BorderBrushLight}"/>
+
+                                <TextBlock Text="💡 Leave both password fields blank if you do not wish to change the existing password."
+                                           FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource ForestBrush}"
+                                           TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Border>
+
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- Footer: Cancel and Save Changes Buttons (Pinned) -->
+                <Border Grid.Row="2"
+                        Background="#F8FAFC"
+                        BorderBrush="{StaticResource BorderBrushLight}"
+                        BorderThickness="0,1,0,0"
+                        CornerRadius="0,0,15,15"
+                        Padding="34,28">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="18"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Button Grid.Column="0"
+                                Content="Cancel"
+                                Style="{StaticResource SecondaryModalButton}"
+                                Click="CancelButton_OnClick"/>
+
+                        <Button Grid.Column="2"
+                                Content="Save Changes"
+                                Width="250"
+                                IsDefault="True"
+                                Style="{StaticResource PrimaryModalButton}"
+                                Click="SaveButton_OnClick"/>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

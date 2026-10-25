@@ -1,15 +1,42 @@
+using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace OopsGrocery.Views;
 
+public enum MessageBoxType
+{
+    Error,
+    Success,
+    Warning,
+    Question,
+    Info
+}
+
 public partial class MessageBoxWindow : Window
 {
-    public MessageBoxWindow(string message, string title = "Oops Grocery Alert")
+    public bool IsConfirmationMode { get; set; }
+    public string? CancelButtonText { get; set; }
+
+    public MessageBoxWindow(
+        string message,
+        string title = "Oops Grocery Alert",
+        MessageBoxType type = MessageBoxType.Error,
+        string? buttonText = null,
+        string? subtitle = null)
     {
         InitializeComponent();
         TitleText.Text = title;
         MessageText.Text = message;
+
+        if (!string.IsNullOrWhiteSpace(subtitle))
+        {
+            SubtitleText.Text = subtitle;
+        }
+
+        ConfigureType(type, buttonText);
 
         var createdAt = DateTime.UtcNow;
 
@@ -25,7 +52,7 @@ public partial class MessageBoxWindow : Window
         {
             if (e.Key == Key.Escape)
             {
-                DialogResult = true;
+                DialogResult = false;
                 Close();
                 return;
             }
@@ -42,7 +69,67 @@ public partial class MessageBoxWindow : Window
             }
         };
 
-        Loaded += (_, _) => ActionButton.Focus();
+        Loaded += (_, _) =>
+        {
+            if (IsConfirmationMode)
+            {
+                ConfirmButton.Focus();
+            }
+            else
+            {
+                ActionButton.Focus();
+            }
+        };
+    }
+
+    public void ApplyConfirmationMode()
+    {
+        ActionButton.Visibility = Visibility.Collapsed;
+        ConfirmationGrid.Visibility = Visibility.Visible;
+        if (!string.IsNullOrWhiteSpace(CancelButtonText))
+        {
+            CancelButton.Content = CancelButtonText;
+        }
+    }
+
+    private void ConfigureType(MessageBoxType type, string? buttonText)
+    {
+        ErrorIcon.Visibility = Visibility.Collapsed;
+        SuccessIcon.Visibility = Visibility.Collapsed;
+        QuestionIcon.Visibility = Visibility.Collapsed;
+
+        switch (type)
+        {
+            case MessageBoxType.Success:
+                IconBadgeBorder.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#DCFCE7"));
+                SuccessIcon.Visibility = Visibility.Visible;
+                ActionButton.Content = buttonText ?? "Continue";
+                ConfirmButton.Content = buttonText ?? "Continue";
+                break;
+
+            case MessageBoxType.Warning:
+            case MessageBoxType.Question:
+                IconBadgeBorder.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FEF3C7"));
+                QuestionIcon.Visibility = Visibility.Visible;
+                ActionButton.Content = buttonText ?? "Confirm";
+                ConfirmButton.Content = buttonText ?? "Confirm";
+                break;
+
+            case MessageBoxType.Info:
+                IconBadgeBorder.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#EFF6FF"));
+                QuestionIcon.Visibility = Visibility.Visible;
+                ActionButton.Content = buttonText ?? "OK";
+                ConfirmButton.Content = buttonText ?? "OK";
+                break;
+
+            case MessageBoxType.Error:
+            default:
+                IconBadgeBorder.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FEE2E2"));
+                ErrorIcon.Visibility = Visibility.Visible;
+                ActionButton.Content = buttonText ?? "Got it, try again";
+                ConfirmButton.Content = buttonText ?? "OK";
+                break;
+        }
     }
 
     private void ActionButton_OnClick(object sender, RoutedEventArgs e)
@@ -51,9 +138,33 @@ public partial class MessageBoxWindow : Window
         Close();
     }
 
-    public static bool? Show(string message, string title = "Oops Grocery Alert", Window? owner = null)
+    private void ConfirmButton_OnClick(object sender, RoutedEventArgs e)
     {
-        var window = new MessageBoxWindow(message, title);
+        DialogResult = true;
+        Close();
+    }
+
+    private void CancelButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        DialogResult = false;
+        Close();
+    }
+
+    private void CloseIconButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        DialogResult = false;
+        Close();
+    }
+
+    public static bool? Show(
+        string message,
+        string title = "Oops Grocery Alert",
+        Window? owner = null,
+        MessageBoxType type = MessageBoxType.Error,
+        string? buttonText = null,
+        string? subtitle = null)
+    {
+        var window = new MessageBoxWindow(message, title, type, buttonText, subtitle);
         var activeWindow = owner ?? Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive) ?? Application.Current.MainWindow;
 
         if (activeWindow != null && activeWindow.IsLoaded)
@@ -68,4 +179,37 @@ public partial class MessageBoxWindow : Window
 
         return window.ShowDialog();
     }
+
+    public static bool Confirm(
+        string message,
+        string title = "Oops Grocery Confirmation",
+        string confirmButtonText = "Confirm",
+        string cancelButtonText = "Cancel",
+        Window? owner = null,
+        MessageBoxType type = MessageBoxType.Question,
+        string? subtitle = "Action Confirmation Required")
+    {
+        var window = new MessageBoxWindow(message, title, type, confirmButtonText, subtitle)
+        {
+            IsConfirmationMode = true,
+            CancelButtonText = cancelButtonText
+        };
+        window.ApplyConfirmationMode();
+
+        var activeWindow = owner ?? Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive) ?? Application.Current.MainWindow;
+
+        if (activeWindow != null && activeWindow.IsLoaded)
+        {
+            window.Owner = activeWindow;
+            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+        }
+        else
+        {
+            window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+        }
+
+        return window.ShowDialog() == true;
+    }
 }
+
+
