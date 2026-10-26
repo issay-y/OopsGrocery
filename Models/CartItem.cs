@@ -23,7 +23,7 @@ public sealed class CartItem : INotifyPropertyChanged
     }
 
     public decimal TotalPrice => Product.Price * Quantity;
-    public string FormattedTotalPrice => $"${TotalPrice:F2}";
+    public string FormattedTotalPrice => $"₱{TotalPrice:N2}";
 
     public CartItem(ProductItem product, int quantity = 1)
     {

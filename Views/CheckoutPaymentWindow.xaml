@@ -1,0 +1,477 @@
+<Window x:Class="OopsGrocery.Views.CheckoutPaymentWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Checkout / Payment"
+        Width="920"
+        Height="680"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner"
+        FontFamily="Inter, Segoe UI, Arial"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
+        TextOptions.TextFormattingMode="Display">
+
+    <Window.Resources>
+        <SolidColorBrush x:Key="ForestBrush" Color="#1B4D2B"/>
+        <SolidColorBrush x:Key="ForestHoverBrush" Color="#225933"/>
+        <SolidColorBrush x:Key="YellowBrush" Color="#FFC926"/>
+        <SolidColorBrush x:Key="YellowHoverBrush" Color="#F6BE14"/>
+        <SolidColorBrush x:Key="InkBrush" Color="#1E293B"/>
+        <SolidColorBrush x:Key="MutedBrush" Color="#64748B"/>
+        <SolidColorBrush x:Key="BorderBrushLight" Color="#E2E8F0"/>
+        <SolidColorBrush x:Key="CardBackground" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="SuccessGreen" Color="#16A34A"/>
+        <SolidColorBrush x:Key="DangerRed" Color="#EF4444"/>
+
+        <!-- Preset Cash Button Style -->
+        <Style x:Key="QuickPresetCashBtn" TargetType="Button">
+            <Setter Property="Background" Value="#F1F5F9"/>
+            <Setter Property="Foreground" Value="{StaticResource InkBrush}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="11.5"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Padding" Value="10,0"/>
+            <Setter Property="Margin" Value="0,0,6,6"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="b" Background="{TemplateBinding Background}" BorderBrush="{StaticResource BorderBrushLight}" BorderThickness="1" CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="#E2E8F0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="CloseIconBtn" TargetType="Button">
+            <Setter Property="Width" Value="32"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource MutedBrush}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="16">
+                            <TextBlock Text="✕" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="#F1F5F9"/>
+                                <Setter Property="Foreground" Value="{StaticResource InkBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Border Background="White"
+            CornerRadius="16"
+            BorderThickness="1"
+            BorderBrush="#CBD5E1"
+            Margin="16">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="30"
+                              Direction="270"
+                              Opacity="0.25"
+                              ShadowDepth="6"
+                              Color="#0F172A"/>
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/> <!-- Titlebar Header -->
+                <RowDefinition Height="*"/>    <!-- Main Body: 2 Columns -->
+                <RowDefinition Height="Auto"/> <!-- Action Buttons Footer -->
+            </Grid.RowDefinitions>
+
+            <!-- ================= TOP HEADER ================= -->
+            <Border Grid.Row="0"
+                    Background="#F8FAFC"
+                    CornerRadius="16,16,0,0"
+                    BorderThickness="0,0,0,1"
+                    BorderBrush="{StaticResource BorderBrushLight}"
+                    Padding="24,16"
+                    MouseLeftButtonDown="Header_OnMouseLeftButtonDown"
+                    Cursor="SizeAll">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="💳 " FontSize="20"/>
+                            <TextBlock Text="Checkout &amp; Payment"
+                                       FontSize="20" FontWeight="Bold"
+                                       Foreground="{StaticResource ForestBrush}"/>
+
+                            <Border Background="#EFF6FF" CornerRadius="6" Padding="10,4" Margin="14,0,8,0">
+                                <TextBlock x:Name="HeaderOrderIdText"
+                                           Text="Order ID: ORD-000000"
+                                           FontWeight="Bold" FontSize="12.5"
+                                           Foreground="#1D4ED8"/>
+                            </Border>
+
+                            <Border x:Name="CustomerTypeBadge"
+                                    Background="#F0FDF4" CornerRadius="6" Padding="10,4">
+                                <TextBlock x:Name="CustomerTypeBadgeText"
+                                           Text="Regular Customer"
+                                           FontWeight="Bold" FontSize="12.5"
+                                           Foreground="#15803D"/>
+                            </Border>
+                        </StackPanel>
+                        <TextBlock Text="Review order line items, check tender details, and confirm cash payment."
+                                   FontSize="12.5" Foreground="{StaticResource MutedBrush}" Margin="0,3,0,0"/>
+                    </StackPanel>
+
+                    <Button Grid.Column="1" Style="{StaticResource CloseIconBtn}" Click="CancelButton_OnClick"/>
+                </Grid>
+            </Border>
+
+            <!-- ================= MAIN BODY ================= -->
+            <Grid Grid.Row="1" Margin="24,18,24,14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.2*"/> <!-- Order Items Table -->
+                    <ColumnDefinition Width="18"/>   <!-- Spacer -->
+                    <ColumnDefinition Width="*"/>     <!-- Payment Summary & Cash Received -->
+                </Grid.ColumnDefinitions>
+
+                <!-- LEFT: ORDER DETAILS TABLE (Independently Scrollable) -->
+                <Border Grid.Column="0"
+                        Background="#F8FAFC"
+                        BorderBrush="{StaticResource BorderBrushLight}"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        Padding="14,12">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Table Header Title -->
+                        <Grid Grid.Row="0" Margin="0,0,0,10">
+                            <TextBlock Text="Purchased Order Items"
+                                       FontSize="14" FontWeight="Bold"
+                                       Foreground="{StaticResource InkBrush}"/>
+                            <TextBlock x:Name="ItemCountSummaryText"
+                                       HorizontalAlignment="Right"
+                                       Text="0 Items"
+                                       FontSize="12" FontWeight="SemiBold"
+                                       Foreground="{StaticResource MutedBrush}"/>
+                        </Grid>
+
+                        <!-- Items ScrollViewer -->
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+                                <!-- Table Header Columns -->
+                                <Border Background="#E2E8F0" CornerRadius="6" Padding="8,6" Margin="0,0,0,6">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="75"/>
+                                            <ColumnDefinition Width="45"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="75"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="Product" FontWeight="Bold" FontSize="11" Foreground="{StaticResource InkBrush}"/>
+                                        <TextBlock Grid.Column="1" Text="Code" FontWeight="Bold" FontSize="11" Foreground="{StaticResource InkBrush}"/>
+                                        <TextBlock Grid.Column="2" Text="Qty" FontWeight="Bold" FontSize="11" Foreground="{StaticResource InkBrush}" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="3" Text="Price" FontWeight="Bold" FontSize="11" Foreground="{StaticResource InkBrush}" HorizontalAlignment="Right"/>
+                                        <TextBlock Grid.Column="4" Text="Total" FontWeight="Bold" FontSize="11" Foreground="{StaticResource InkBrush}" HorizontalAlignment="Right"/>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Table Rows -->
+                                <ItemsControl x:Name="OrderItemsList">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border BorderBrush="{StaticResource BorderBrushLight}"
+                                                    BorderThickness="0,0,0,1"
+                                                    Padding="8,8">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="75"/>
+                                                        <ColumnDefinition Width="45"/>
+                                                        <ColumnDefinition Width="70"/>
+                                                        <ColumnDefinition Width="75"/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <TextBlock Grid.Column="0" Text="{Binding Product.Name}" FontWeight="SemiBold" FontSize="12" Foreground="{StaticResource InkBrush}" TextTrimming="CharacterEllipsis"/>
+                                                    <TextBlock Grid.Column="1" Text="{Binding Product.Sku}" FontSize="11" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center"/>
+                                                    <TextBlock Grid.Column="2" Text="{Binding Quantity}" FontWeight="Bold" FontSize="12" Foreground="{StaticResource InkBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    <TextBlock Grid.Column="3" Text="{Binding Product.FormattedPrice}" FontSize="11.5" Foreground="{StaticResource MutedBrush}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                                    <TextBlock Grid.Column="4" Text="{Binding FormattedTotalPrice}" FontWeight="Bold" FontSize="12" Foreground="{StaticResource ForestBrush}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
+
+                <!-- RIGHT: PAYMENT METHOD & SUMMARY -->
+                <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <!-- PAYMENT METHOD: CASH ONLY (Fixed & Non-Selectable) -->
+                        <Border Background="#F1F5F9"
+                                BorderBrush="{StaticResource BorderBrushLight}"
+                                BorderThickness="1"
+                                CornerRadius="8"
+                                Padding="12,10"
+                                Margin="0,0,0,12">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0" Text="💵" FontSize="18" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="Payment Method: Cash Only"
+                                               FontWeight="Bold" FontSize="13"
+                                               Foreground="{StaticResource InkBrush}"/>
+                                    <TextBlock Text="Fixed tender method (Credit/Debit/E-Wallets disabled)"
+                                               FontSize="10.5" Foreground="{StaticResource MutedBrush}"/>
+                                </StackPanel>
+                                <Border Grid.Column="2" Background="{StaticResource ForestBrush}" CornerRadius="4" Padding="6,2" VerticalAlignment="Center">
+                                    <TextBlock Text="LOCKED" FontSize="10" FontWeight="Bold" Foreground="White"/>
+                                </Border>
+                            </Grid>
+                        </Border>
+
+                        <!-- PAYMENT SUMMARY CARD -->
+                        <Border Background="#FFFFFF"
+                                BorderBrush="{StaticResource BorderBrushLight}"
+                                BorderThickness="1"
+                                CornerRadius="10"
+                                Padding="16,14"
+                                Margin="0,0,0,12">
+                            <StackPanel>
+                                <TextBlock Text="PAYMENT SUMMARY"
+                                           FontSize="11" FontWeight="Bold"
+                                           Foreground="{StaticResource MutedBrush}"
+                                           Margin="0,0,0,8"/>
+
+                                <!-- Subtotal -->
+                                <Grid Margin="0,0,0,6">
+                                    <TextBlock Text="Subtotal:" FontSize="13" Foreground="{StaticResource InkBrush}"/>
+                                    <TextBlock x:Name="SubtotalText" Text="₱0.00" FontSize="13.5" FontWeight="SemiBold" Foreground="{StaticResource InkBrush}" HorizontalAlignment="Right"/>
+                                </Grid>
+
+                                <!-- Discount -->
+                                <Grid Margin="0,0,0,6">
+                                    <TextBlock x:Name="DiscountLabelText" Text="Discount (20%):" FontSize="13" Foreground="#B91C1C"/>
+                                    <TextBlock x:Name="DiscountText" Text="-₱0.00" FontSize="13.5" FontWeight="Bold" Foreground="#DC2626" HorizontalAlignment="Right"/>
+                                </Grid>
+
+                                <!-- New Subtotal -->
+                                <Grid Margin="0,0,0,6">
+                                    <TextBlock Text="New Subtotal:" FontSize="13" Foreground="{StaticResource InkBrush}"/>
+                                    <TextBlock x:Name="NewSubtotalText" Text="₱0.00" FontSize="13.5" FontWeight="SemiBold" Foreground="{StaticResource InkBrush}" HorizontalAlignment="Right"/>
+                                </Grid>
+
+                                <!-- VAT (12%) -->
+                                <Grid Margin="0,0,0,8">
+                                    <TextBlock Text="VAT (12%):" FontSize="13" Foreground="{StaticResource InkBrush}"/>
+                                    <TextBlock x:Name="VatText" Text="₱0.00" FontSize="13.5" FontWeight="SemiBold" Foreground="{StaticResource InkBrush}" HorizontalAlignment="Right"/>
+                                </Grid>
+
+                                <Border Height="1" Background="{StaticResource BorderBrushLight}" Margin="0,2,0,8"/>
+
+                                <!-- Final Total (Emphasized) -->
+                                <Border Background="#F0FDF4"
+                                        BorderBrush="#86EFAC"
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        Padding="12,10">
+                                    <Grid>
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Text="FINAL TOTAL" FontSize="11" FontWeight="Bold" Foreground="{StaticResource ForestBrush}"/>
+                                            <TextBlock Text="Amount Payable" FontSize="10" Foreground="{StaticResource MutedBrush}"/>
+                                        </StackPanel>
+                                        <TextBlock x:Name="FinalTotalText"
+                                                   Text="₱0.00"
+                                                   FontSize="22" FontWeight="Bold"
+                                                   Foreground="{StaticResource ForestBrush}"
+                                                   HorizontalAlignment="Right"
+                                                   VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- CASH RECEIVED & CHANGE SECTION -->
+                        <Border Background="#FFFFFF"
+                                BorderBrush="{StaticResource BorderBrushLight}"
+                                BorderThickness="1"
+                                CornerRadius="10"
+                                Padding="16,14">
+                            <StackPanel>
+                                <!-- Cash Received Input -->
+                                <TextBlock Text="CASH RECEIVED (₱)"
+                                           FontSize="11" FontWeight="Bold"
+                                           Foreground="{StaticResource MutedBrush}"
+                                           Margin="0,0,0,6"/>
+
+                                <Border BorderBrush="{StaticResource BorderBrushLight}"
+                                        x:Name="CashInputBorder"
+                                        BorderThickness="1.5"
+                                        CornerRadius="8"
+                                        Background="#FFFFFF"
+                                        Padding="8,5"
+                                        Margin="0,0,0,8">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="₱ " FontWeight="Bold" FontSize="18" Foreground="{StaticResource InkBrush}" VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="1"
+                                                 x:Name="CashReceivedTextBox"
+                                                 FontSize="18" FontWeight="Bold"
+                                                 BorderThickness="0"
+                                                 Background="Transparent"
+                                                 Foreground="{StaticResource InkBrush}"
+                                                 VerticalAlignment="Center"
+                                                 TextChanged="CashReceivedTextBox_OnTextChanged"
+                                                 KeyDown="CashReceivedTextBox_OnKeyDown"/>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Quick Tender Presets -->
+                                <WrapPanel Margin="0,0,0,10">
+                                    <Button Content="Exact" Style="{StaticResource QuickPresetCashBtn}" Click="PresetExact_Click"/>
+                                    <Button Content="₱100" Style="{StaticResource QuickPresetCashBtn}" Click="PresetAmount_Click" Tag="100"/>
+                                    <Button Content="₱200" Style="{StaticResource QuickPresetCashBtn}" Click="PresetAmount_Click" Tag="200"/>
+                                    <Button Content="₱500" Style="{StaticResource QuickPresetCashBtn}" Click="PresetAmount_Click" Tag="500"/>
+                                    <Button Content="₱1,000" Style="{StaticResource QuickPresetCashBtn}" Click="PresetAmount_Click" Tag="1000"/>
+                                    <Button Content="₱2,000" Style="{StaticResource QuickPresetCashBtn}" Click="PresetAmount_Click" Tag="2000"/>
+                                </WrapPanel>
+
+                                <!-- Change Display Card -->
+                                <Border x:Name="ChangeCardBorder"
+                                        Background="#FEF3C7"
+                                        BorderBrush="#FCD34D"
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        Padding="12,10">
+                                    <Grid>
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock x:Name="ChangeLabelText" Text="CHANGE DUE" FontSize="11" FontWeight="Bold" Foreground="#92400E"/>
+                                            <TextBlock x:Name="ChangeSubtext" Text="Return to customer" FontSize="10" Foreground="#B45309"/>
+                                        </StackPanel>
+                                        <TextBlock x:Name="ChangeAmountText"
+                                                   Text="₱0.00"
+                                                   FontSize="20" FontWeight="Bold"
+                                                   Foreground="#92400E"
+                                                   HorizontalAlignment="Right"
+                                                   VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Error feedback if cash received < Final Total -->
+                                <TextBlock x:Name="CashErrorText"
+                                           Text="⚠️ Insufficient cash received. Amount must be at least Final Total."
+                                           FontSize="11.5" FontWeight="SemiBold"
+                                           Foreground="#DC2626"
+                                           Margin="0,8,0,0"
+                                           Visibility="Collapsed"
+                                           TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+
+            <!-- ================= FOOTER ACTION BUTTONS ================= -->
+            <Border Grid.Row="2"
+                    Background="#F8FAFC"
+                    CornerRadius="0,0,16,16"
+                    BorderThickness="0,1,0,0"
+                    BorderBrush="{StaticResource BorderBrushLight}"
+                    Padding="24,14">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0"
+                            Content="← Cancel &amp; Return to Order"
+                            Height="44"
+                            Padding="18,0"
+                            Background="#F1F5F9"
+                            Foreground="{StaticResource InkBrush}"
+                            FontWeight="SemiBold"
+                            FontSize="13.5"
+                            BorderBrush="{StaticResource BorderBrushLight}"
+                            BorderThickness="1"
+                            Cursor="Hand"
+                            Click="CancelButton_OnClick">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="b" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="b" Property="Background" Value="#E2E8F0"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+
+                    <Button Grid.Column="2"
+                            x:Name="ConfirmPaymentButton"
+                            Content="✅ Confirm Payment &amp; Issue Receipt"
+                            Height="44"
+                            Padding="26,0"
+                            Background="{StaticResource ForestBrush}"
+                            Foreground="White"
+                            FontWeight="Bold"
+                            FontSize="14"
+                            Cursor="Hand"
+                            Click="ConfirmPaymentButton_OnClick">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="8">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="b" Property="Background" Value="{StaticResource ForestHoverBrush}"/>
+                                    </Trigger>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter TargetName="b" Property="Background" Value="#CBD5E1"/>
+                                        <Setter Property="Foreground" Value="#64748B"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

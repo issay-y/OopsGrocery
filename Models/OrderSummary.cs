@@ -8,5 +8,5 @@ public sealed class OrderSummary
     public string Status { get; set; } = "Processing";
     public string PlacedAt { get; set; } = string.Empty;
 
-    public string FormattedTotal => $"${TotalAmount:F2}";
+    public string FormattedTotal => $"₱{TotalAmount:N2}";
 }

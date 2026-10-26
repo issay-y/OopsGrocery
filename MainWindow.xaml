@@ -1,4 +1,4 @@
-<Window x:Class="OopsGrocery.MainWindow"
+﻿<Window x:Class="OopsGrocery.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:OopsGrocery.ViewModels"
@@ -381,30 +381,15 @@
                                 </Style>
                             </StackPanel.Style>
 
-                            <TextBlock Text="CASHIER POS TERMINAL"
+                            <TextBlock Text="CASHIER PORTAL"
                                        FontSize="12" FontWeight="Bold"
                                        Foreground="{StaticResource CreamBrush}" Opacity="0.6"
                                        Margin="6,0,0,8"/>
 
-                            <Button Content="📟   POS Register (Live)"
+                            <!-- Only one main navigation item: New Order / POS -->
+                            <Button Content="🛒   New Order / POS"
                                     Style="{StaticResource SidebarActiveNavButton}"
-                                    Command="{Binding SelectNavCommand}" CommandParameter="Register"/>
-
-                            <Button Content="🧾   Shift Transactions"
-                                    Style="{StaticResource SidebarNavButton}"
-                                    Command="{Binding SelectNavCommand}" CommandParameter="Transactions"/>
-
-                            <Button Content="💵   Cash Drawer &amp; Drop"
-                                    Style="{StaticResource SidebarNavButton}"
-                                    Command="{Binding SelectNavCommand}" CommandParameter="CashDrawer"/>
-
-                            <Button Content="🏷️   Item Price Checker"
-                                    Style="{StaticResource SidebarNavButton}"
-                                    Command="{Binding SelectNavCommand}" CommandParameter="PriceCheck"/>
-
-                            <Button Content="⏸️   Hold / Recall Sale"
-                                    Style="{StaticResource SidebarNavButton}"
-                                    Command="{Binding SelectNavCommand}" CommandParameter="HoldSale"/>
+                                    Command="{Binding SelectNavCommand}" CommandParameter="NewOrderPOS"/>
                         </StackPanel>
                     </StackPanel>
                 </ScrollViewer>

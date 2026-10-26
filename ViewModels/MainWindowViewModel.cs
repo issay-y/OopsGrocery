@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -150,7 +150,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
                 }
                 else
                 {
-                    ActiveNav = nav;
+                    ActiveNav = "NewOrderPOS";
+                    CashierVM.EnsurePosScreen();
                     CurrentViewModel = CashierVM;
                 }
             }
@@ -169,7 +170,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         else
         {
             _currentViewModel = CashierVM;
-            _activeNav = "Register";
+            _activeNav = "NewOrderPOS";
         }
 
         SignOutCommand = new RelayCommand(() =>
